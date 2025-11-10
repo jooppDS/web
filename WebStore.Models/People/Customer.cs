@@ -5,7 +5,18 @@ namespace WebStore.Models
     public class Customer
     {
         public DateTime DateOfBirth { get; set; }
-        public int Age => DateTime.Now.Year - DateOfBirth.Year - (DateTime.Now.DayOfYear < DateOfBirth.DayOfYear ? 1 : 0);
+        
+        public int Age
+        {
+            get
+            {
+                var today = DateTime.Today;
+                var age = today.Year - DateOfBirth.Year;
+                if (DateOfBirth.Date > today.AddYears(-age)) age--;
+                return age;
+            }
+        }
+        
         public List<Address> ShippingAddress { get; set; } = new();
     }
 }
