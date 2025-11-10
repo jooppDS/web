@@ -1,0 +1,62 @@
+# Web Store Project
+
+## Project Structure
+
+```
+WebStore.Models/
+├── People/          # Person-related classes
+│   ├── Person.cs
+│   ├── Employee.cs
+│   └── Customer.cs
+├── Products/        # Product classes
+│   ├── Product.cs
+│   ├── Phone.cs
+│   ├── Weapon.cs
+│   ├── Clothing.cs
+│   ├── New.cs
+│   └── Used.cs
+├── Business/        # Business entities
+│   ├── Seller.cs
+│   └── Manufacturer.cs
+├── Orders/          # Order-related classes
+│   ├── Order.cs
+│   ├── Review.cs
+│   └── Discount.cs
+├── Enums/           # Enumeration types
+│   ├── EmployeeRole.cs
+│   ├── ClothingSize.cs
+│   ├── Gender.cs
+│   ├── ReviewRating.cs
+│   ├── OrderStatus.cs
+│   ├── DeliveryType.cs
+│   └── ProductCondition.cs
+└── ValueObjects/    # Complex value types
+    └── Address.cs
+```
+
+## Implemented Features
+
+### Classes
+- **People**: Person (abstract), Employee, Customer
+- **Products**: Product, Phone, Weapon, Clothing, New, Used
+- **Business**: Seller, Manufacturer
+- **Orders**: Order, Review, Discount
+
+### Enums
+- `EmployeeRole` - Manager, Moderator
+- `ClothingSize` - XS, S, M, L, XL, XXL
+- `Gender` - Male, Female, Unisex
+- `ReviewRating` - OneStar through FiveStars
+- `OrderStatus` - Pending, Completed, Cancelled, Accepted
+- `DeliveryType` - Delivery, SelfPickup
+- `ProductCondition` - MinimalWear, FieldTested, WellWorn, BattleScarred
+
+### Value Objects
+- `Address` - Street, City, State, PostalCode, Country
+
+### Implemented Fields
+- **Person**: FirstName, LastName, PhoneNumber, LegalAdultAge
+- **Customer**: DateOfBirth, Age (derived), ShippingAddress
+- **Manufacturer**: Name, Address
+- **Review**: Rating, Comment
+

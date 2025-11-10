@@ -1,6 +1,6 @@
 namespace WebStore.Models
 {
-    public class Manufacturer
+    public class Weapon
     {
     }
 }

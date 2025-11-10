@@ -1,6 +1,6 @@
 namespace WebStore.Models
 {
-    public class Clothing : Product
+    public class Clothing
     {
     }
 }

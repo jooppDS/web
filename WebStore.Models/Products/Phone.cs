@@ -1,6 +1,6 @@
 namespace WebStore.Models
 {
-    public class Used : Product
+    public class Phone
     {
     }
 }
