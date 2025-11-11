@@ -60,3 +60,13 @@ WebStore.Models/
 - **Manufacturer**: Name, Address
 - **Review**: Rating, Comment
 
+### Class Extent (Class Extent Persistence)
+All implemented classes have class extent for storing all created objects:
+- `Manufacturer` - `Manufacturer.GetAll()`
+- `Person` - `Person.GetAll()`
+- `Customer` - `Customer.GetAll()`
+- `Review` - `Review.GetAll()`
+- `Address` - `Address.GetAll()`
+
+All objects are automatically added to the collection upon creation and accessible through the static method `GetAll()`.
+

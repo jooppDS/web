@@ -5,6 +5,8 @@ namespace WebStore.Models
 {
     public class Manufacturer
     {
+        private static readonly List<Manufacturer> _extent = new List<Manufacturer>();
+
         private string _name = string.Empty;
         private Address _address = new();
 
@@ -33,6 +35,16 @@ namespace WebStore.Models
                     throw new ArgumentNullException(nameof(Address), "Address cannot be null");
                 _address = value;
             }
+        }
+
+        public static List<Manufacturer> GetAll()
+        {
+            return new List<Manufacturer>(_extent);
+        }
+
+        public Manufacturer()
+        {
+            _extent.Add(this);
         }
     }
 }

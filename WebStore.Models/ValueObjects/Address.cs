@@ -4,6 +4,8 @@ namespace WebStore.Models.ValueObjects
 {
     public class Address
     {
+        private static readonly List<Address> _extent = new List<Address>();
+
         private string _street = string.Empty;
         private string _city = string.Empty;
         private string _state = string.Empty;
@@ -86,6 +88,16 @@ namespace WebStore.Models.ValueObjects
                     throw new ArgumentException("Country cannot exceed 50 characters", nameof(Country));
                 _country = value;
             }
+        }
+
+        public static List<Address> GetAll()
+        {
+            return new List<Address>(_extent);
+        }
+
+        public Address()
+        {
+            _extent.Add(this);
         }
     }
 }

@@ -5,6 +5,8 @@ namespace WebStore.Models
 {
     public class Review
     {
+        private static readonly List<Review> _extent = new List<Review>();
+
         private ReviewRating _rating;
         private string? _comment;
 
@@ -31,6 +33,16 @@ namespace WebStore.Models
                     throw new ArgumentException("Comment cannot exceed 1000 characters", nameof(Comment));
                 _comment = value;
             }
+        }
+
+        public static List<Review> GetAll()
+        {
+            return new List<Review>(_extent);
+        }
+
+        public Review()
+        {
+            _extent.Add(this);
         }
     }
 }

@@ -5,6 +5,8 @@ namespace WebStore.Models
 {
     public class Customer
     {
+        private static readonly List<Customer> _extent = new List<Customer>();
+
         private DateTime _dateOfBirth;
 
         [Required(ErrorMessage = "Date of birth is required")]
@@ -37,6 +39,16 @@ namespace WebStore.Models
 
         [MinLength(0, ErrorMessage = "Shipping address list cannot be null")]
         public List<Address> ShippingAddress { get; set; } = new();
+
+        public static List<Customer> GetAll()
+        {
+            return new List<Customer>(_extent);
+        }
+
+        public Customer()
+        {
+            _extent.Add(this);
+        }
     }
 }
 

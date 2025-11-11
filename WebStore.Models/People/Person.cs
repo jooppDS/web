@@ -4,6 +4,8 @@ namespace WebStore.Models
 {
     public abstract class Person
     {
+        private static readonly List<Person> _extent = new List<Person>();
+
         private string _firstName = string.Empty;
         private string _lastName = string.Empty;
         private string _phoneNumber = string.Empty;
@@ -55,6 +57,16 @@ namespace WebStore.Models
 
         [Range(1, 150, ErrorMessage = "Legal adult age must be between 1 and 150")]
         public static int LegalAdultAge { get; set; } = 18;
+
+        public static List<Person> GetAll()
+        {
+            return new List<Person>(_extent);
+        }
+
+        protected Person()
+        {
+            _extent.Add(this);
+        }
     }
 }
 
