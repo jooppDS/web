@@ -5,6 +5,18 @@ namespace WebStore.Tests;
 public class CustomerTests
 {
     [Test]
+    public void CustomerCreatedProperly()
+    {
+        var initialCount = Customer.GetAll().Count;
+
+        var customer = new Customer(new DateTime(2000, 11, 10));
+        Assert.That(Customer.GetAll().Count, Is.EqualTo(initialCount + 1));
+        Assert.That(customer.DateOfBirth, Is.EqualTo(new DateTime(2000, 11, 10)));
+        Assert.That(customer.ShippingAddress, Is.Not.Null);
+        Assert.That(customer.ShippingAddress.Count, Is.EqualTo(0));
+    }
+    
+    [Test]
     public void DateOfBirthThrowsIfIsInFuture()
     {
         var futureDate = DateTime.Today.AddDays(1);
@@ -30,5 +42,4 @@ public class CustomerTests
             expectedAge--;
         Assert.That(customer.Age, Is.EqualTo(expectedAge));
     }
-    
 }

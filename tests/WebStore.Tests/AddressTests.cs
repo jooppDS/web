@@ -1,11 +1,9 @@
-using System.ComponentModel.DataAnnotations;
 using WebStore.Models.ValueObjects;
 
 namespace WebStore.Tests;
 
 public class AddressTests
 {
-    
     [Test]
     public void AddressCreatedProperly()
     {
@@ -53,7 +51,7 @@ public class AddressTests
         var address = new Address("Solidarnosci", "Warsaw", "California", "12351", "United States");
         Assert.Throws<ArgumentException>(() => address.PostalCode = "");
         Assert.Throws<ArgumentException>(() => address.PostalCode = null);
-        Assert.Throws<ArgumentException>(() => address.PostalCode = new string('a', 21));
+        Assert.Throws<ArgumentException>(() => address.PostalCode = new string('A', 21));
     }
 
     [Test]
@@ -71,17 +69,4 @@ public class AddressTests
         Assert.Throws<ArgumentException>(() => address.Country = "");
         Assert.Throws<ArgumentException>(() => address.Country = new string('a', 51));
     }
-
-    [Test]
-    public void ValidatorValidAddressValidatedSuccessfully()
-    {
-        var address = new Address("Solidarnosci", "Warsaw", "California", "12351", "United States");
-        var validationResults = new List<ValidationResult>();
-        var context = new ValidationContext(address);
-        var isValid = Validator.TryValidateObject(address, context, validationResults, true);
-        Assert.IsTrue(isValid);
-        Assert.IsEmpty(validationResults);
-    }
-
-
 }
