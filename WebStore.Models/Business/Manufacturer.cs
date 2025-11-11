@@ -8,7 +8,7 @@ namespace WebStore.Models
         private static readonly List<Manufacturer> _extent = new List<Manufacturer>();
 
         private string _name = string.Empty;
-        private Address _address = new();
+        private Address _address = null!;
 
         [Required(ErrorMessage = "Manufacturer name is required")]
         [StringLength(100, MinimumLength = 2, ErrorMessage = "Manufacturer name must be between 2 and 100 characters")]
@@ -42,8 +42,10 @@ namespace WebStore.Models
             return new List<Manufacturer>(_extent);
         }
 
-        public Manufacturer()
+        public Manufacturer(string name, Address address)
         {
+            Name = name;
+            Address = address;
             _extent.Add(this);
         }
     }

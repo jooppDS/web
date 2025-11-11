@@ -40,8 +40,10 @@ namespace WebStore.Models
             return new List<Review>(_extent);
         }
 
-        public Review()
+        public Review(ReviewRating rating, string? comment = null)
         {
+            Rating = rating;
+            Comment = comment;
             _extent.Add(this);
         }
     }

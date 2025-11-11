@@ -63,8 +63,11 @@ namespace WebStore.Models
             return new List<Person>(_extent);
         }
 
-        protected Person()
+        protected Person(string firstName, string lastName, string phoneNumber)
         {
+            FirstName = firstName;
+            LastName = lastName;
+            PhoneNumber = phoneNumber;
             _extent.Add(this);
         }
     }

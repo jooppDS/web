@@ -95,8 +95,13 @@ namespace WebStore.Models.ValueObjects
             return new List<Address>(_extent);
         }
 
-        public Address()
+        public Address(string street, string city, string state, string postalCode, string country)
         {
+            Street = street;
+            City = city;
+            State = state;
+            PostalCode = postalCode;
+            Country = country;
             _extent.Add(this);
         }
     }

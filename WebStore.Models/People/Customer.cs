@@ -45,8 +45,9 @@ namespace WebStore.Models
             return new List<Customer>(_extent);
         }
 
-        public Customer()
+        public Customer(DateTime dateOfBirth)
         {
+            DateOfBirth = dateOfBirth;
             _extent.Add(this);
         }
     }
