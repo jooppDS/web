@@ -21,4 +21,8 @@
         <Using Include="NUnit.Framework"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\WebStore.Models\WebStore.Models.csproj" />
+    </ItemGroup>
+
 </Project>
