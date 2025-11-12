@@ -69,4 +69,3 @@ All implemented classes have class extent for storing all created objects:
 - `Address` - `Address.GetAll()`
 
 All objects are automatically added to the collection upon creation and accessible through the static method `GetAll()`.
-

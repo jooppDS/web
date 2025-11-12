@@ -1,11 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using WebStore.Models.Enums;
+using WebStore.Models.Persistence;
 
 namespace WebStore.Models
 {
     public class Review
     {
-        private static readonly List<Review> _extent = new List<Review>();
+        private static List<Review> _extent = new List<Review>();
 
         private ReviewRating _rating;
         private string? _comment;
@@ -38,6 +39,34 @@ namespace WebStore.Models
         public static List<Review> GetAll()
         {
             return new List<Review>(_extent);
+        }
+
+        
+        public static void SaveToXml(string? directory = null)
+        {
+            XmlPersistenceService.SaveToXml(_extent, "Reviews", directory);
+        }
+
+        
+        public static void LoadFromXml(string? directory = null)
+        {
+            if (!XmlPersistenceService.FileExists("Reviews", directory))
+                return;
+
+            var loadedReviews = XmlPersistenceService.LoadFromXml<Review>("Reviews", directory);
+            
+            
+            _extent.Clear();
+            foreach (var review in loadedReviews)
+            {
+                _extent.Add(review);
+            }
+        }
+
+        
+        public Review()
+        {
+            
         }
 
         public Review(ReviewRating rating, string? comment = null)

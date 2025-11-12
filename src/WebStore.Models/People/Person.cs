@@ -1,10 +1,11 @@
 using System.ComponentModel.DataAnnotations;
+using WebStore.Models.Persistence;
 
 namespace WebStore.Models
 {
     public abstract class Person
     {
-        private static readonly List<Person> _extent = new List<Person>();
+        private static List<Person> _extent = new List<Person>();
 
         private string _firstName = string.Empty;
         private string _lastName = string.Empty;
@@ -61,6 +62,34 @@ namespace WebStore.Models
         public static List<Person> GetAll()
         {
             return new List<Person>(_extent);
+        }
+
+     
+        public static void SaveToXml(string? directory = null)
+        {
+            XmlPersistenceService.SaveToXml(_extent, "Persons", directory);
+        }
+
+    
+        public static void LoadFromXml(string? directory = null)
+        {
+            if (!XmlPersistenceService.FileExists("Persons", directory))
+                return;
+
+            var loadedPersons = XmlPersistenceService.LoadFromXml<Person>("Persons", directory);
+            
+            
+            _extent.Clear();
+            foreach (var person in loadedPersons)
+            {
+                _extent.Add(person);
+            }
+        }
+
+     
+        protected Person()
+        {
+          
         }
 
         protected Person(string firstName, string lastName, string phoneNumber)

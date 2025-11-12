@@ -1,10 +1,11 @@
 using System.ComponentModel.DataAnnotations;
+using WebStore.Models.Persistence;
 
 namespace WebStore.Models.ValueObjects
 {
     public class Address
     {
-        private static readonly List<Address> _extent = new List<Address>();
+        private static List<Address> _extent = new List<Address>();
 
         private string _street = string.Empty;
         private string _city = string.Empty;
@@ -93,6 +94,34 @@ namespace WebStore.Models.ValueObjects
         public static List<Address> GetAll()
         {
             return new List<Address>(_extent);
+        }
+
+        
+        public static void SaveToXml(string? directory = null)
+        {
+            XmlPersistenceService.SaveToXml(_extent, "Addresses", directory);
+        }
+
+     
+        public static void LoadFromXml(string? directory = null)
+        {
+            if (!XmlPersistenceService.FileExists("Addresses", directory))
+                return;
+
+            var loadedAddresses = XmlPersistenceService.LoadFromXml<Address>("Addresses", directory);
+            
+            
+            _extent.Clear();
+            foreach (var address in loadedAddresses)
+            {
+                _extent.Add(address);
+            }
+        }
+
+     
+        public Address()
+        {
+            
         }
 
         public Address(string street, string city, string state, string postalCode, string country)
