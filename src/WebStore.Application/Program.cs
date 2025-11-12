@@ -1,7 +1,7 @@
 ﻿using WebStore.Models.ValueObjects;
 using System.Reflection;
 
-Console.WriteLine("1. Creating objects...");
+Console.WriteLine("1. Creating objects.");
 Console.WriteLine();
 
 var address1 = new Address("Main Street", "Moscow", "Moscow Oblast", "101000", "Russia");
@@ -21,7 +21,7 @@ Console.WriteLine();
 Address.SaveToXml();
 
 Console.WriteLine("Files saved:");
-Console.WriteLine($"- WebStore.Source/Data/Addresses.xml - {File.Exists("../Data/Addresses.xml")}");
+Console.WriteLine($"- src/WebStore.Source/Data/Addresses.xml - {File.Exists("../../../../WebStore.Source/Data/Addresses.xml")}");
 
 Console.WriteLine();
 Console.WriteLine("3. Clearing collections in memory");
@@ -49,7 +49,7 @@ foreach (var addr in Address.GetAll())
     Console.WriteLine($"- {addr.Street}, {addr.City}, {addr.State}, {addr.PostalCode}, {addr.Country}");
 }
 
-void ClearExtent<T>() where T : class
+void ClearExtent<T>()
 {
     var type = typeof(T);
     var extentField = type.GetField("_extent", BindingFlags.NonPublic | BindingFlags.Static);
