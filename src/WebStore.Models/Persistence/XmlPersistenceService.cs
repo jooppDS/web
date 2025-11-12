@@ -5,6 +5,7 @@ namespace WebStore.Models.Persistence
     public static class XmlPersistenceService
     {
         private static readonly string DefaultDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
+        
         public static void SaveToXml<T>(IEnumerable<T> items, string fileName, string? directory = null)
         {
             if (items == null)

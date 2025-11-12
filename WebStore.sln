@@ -1,12 +1,10 @@
 ﻿Microsoft Visual Studio Solution File, Format Version 12.00
-# 
+#
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebStore.Models", "src\WebStore.Models\WebStore.Models.csproj", "{193A151C-C579-41EE-A157-C9E6A8DF07D0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebStore.Tests", "tests\WebStore.Tests\WebStore.Tests.csproj", "{F414623C-942D-45B2-B108-29640288A660}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{EFD857DA-23ED-48E7-8FC5-E3FDF48DFF9A}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebStore.Demo", "src\WebStore.Demo\WebStore.Demo.csproj", "{5D0D7C0A-D024-4128-B87B-59B672BD4688}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebStore.Application", "src\WebStore.Application\WebStore.Application.csproj", "{5D0D7C0A-D024-4128-B87B-59B672BD4688}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
