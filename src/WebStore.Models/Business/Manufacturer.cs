@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
-using WebStore.Models.ValueObjects;
 using WebStore.Models.Persistence;
+using WebStore.Models.ValueObjects;
 
 namespace WebStore.Models
 {

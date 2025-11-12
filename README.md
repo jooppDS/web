@@ -1,39 +1,5 @@
 # Web Store Project
 
-## Project Structure
-
-```
-WebStore.Models/
-├── People/          # Person-related classes
-│   ├── Person.cs
-│   ├── Employee.cs
-│   └── Customer.cs
-├── Products/        # Product classes
-│   ├── Product.cs
-│   ├── Phone.cs
-│   ├── Weapon.cs
-│   ├── Clothing.cs
-│   ├── New.cs
-│   └── Used.cs
-├── Business/        # Business entities
-│   ├── Seller.cs
-│   └── Manufacturer.cs
-├── Orders/          # Order-related classes
-│   ├── Order.cs
-│   ├── Review.cs
-│   └── Discount.cs
-├── Enums/           # Enumeration types
-│   ├── EmployeeRole.cs
-│   ├── ClothingSize.cs
-│   ├── Gender.cs
-│   ├── ReviewRating.cs
-│   ├── OrderStatus.cs
-│   ├── DeliveryType.cs
-│   └── ProductCondition.cs
-└── ValueObjects/    # Complex value types
-    └── Address.cs
-```
-
 ## Implemented Features
 
 ### Classes
