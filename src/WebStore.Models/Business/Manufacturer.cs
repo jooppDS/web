@@ -1,11 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using WebStore.Models.ValueObjects;
+using WebStore.Models.Persistence;
 
 namespace WebStore.Models
 {
     public class Manufacturer
     {
-        private static readonly List<Manufacturer> _extent = new List<Manufacturer>();
+        private static List<Manufacturer> _extent = new List<Manufacturer>();
 
         private string _name = string.Empty;
         private Address _address = null!;
@@ -40,6 +41,32 @@ namespace WebStore.Models
         public static List<Manufacturer> GetAll()
         {
             return new List<Manufacturer>(_extent);
+        }
+
+       
+        public static void SaveToXml(string? directory = null)
+        {
+            XmlPersistenceService.SaveToXml(_extent, "Manufacturers", directory);
+        }
+
+        public static void LoadFromXml(string? directory = null)
+        {
+            if (!XmlPersistenceService.FileExists("Manufacturers", directory))
+                return;
+
+            var loadedManufacturers = XmlPersistenceService.LoadFromXml<Manufacturer>("Manufacturers", directory);
+
+            _extent.Clear();
+            foreach (var manufacturer in loadedManufacturers)
+            {
+                _extent.Add(manufacturer);
+            }
+        }
+
+       
+        public Manufacturer()
+        {
+            
         }
 
         public Manufacturer(string name, Address address)
