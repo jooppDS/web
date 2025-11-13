@@ -2,6 +2,7 @@ using WebStore.Models;
 
 namespace WebStore.Tests;
 
+[TestFixture]
 public class CustomerTests
 {
     [Test]

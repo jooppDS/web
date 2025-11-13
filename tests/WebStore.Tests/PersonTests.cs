@@ -2,6 +2,7 @@
 
 namespace WebStore.Tests;
 
+[TestFixture]
 public class PersonTests
 {
     private class TestPerson : Person

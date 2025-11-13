@@ -2,6 +2,7 @@ using WebStore.Models.ValueObjects;
 
 namespace WebStore.Tests;
 
+[TestFixture]
 public class AddressTests
 {
     [Test]
