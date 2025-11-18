@@ -385,3 +385,6 @@ complex_types_analysis.md
 diagram_analysis.md
 
 src/WebStore.Source/Data/*
+
+# Data directory
+Data/
