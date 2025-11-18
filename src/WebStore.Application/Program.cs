@@ -1,6 +1,8 @@
 ﻿using WebStore.Models.ValueObjects;
 using System.Reflection;
 
+var path = "../../../Data";
+
 Console.WriteLine("1. Creating objects.");
 Console.WriteLine();
 
@@ -18,10 +20,10 @@ Console.WriteLine();
 Console.WriteLine("2. Saving data to XML files");
 Console.WriteLine();
 
-Address.SaveToXml();
+Address.SaveToXml(path);
 
 Console.WriteLine("Files saved:");
-Console.WriteLine($"- src/WebStore.Source/Data/Addresses.xml - {File.Exists("../../../../WebStore.Source/Data/Addresses.xml")}");
+Console.WriteLine($"- src/WebStore.Application/Data/Addresses.xml - {File.Exists(Path.Combine(path, "Addresses.xml"))}");
 
 Console.WriteLine();
 Console.WriteLine("3. Clearing collections in memory");
@@ -35,7 +37,7 @@ Console.WriteLine();
 Console.WriteLine("4. Loading data from XML files");
 Console.WriteLine();
 
-Address.LoadFromXml();
+Address.LoadFromXml(path);
 
 Console.WriteLine($"Loaded addresses: {Address.GetAll().Count}");
 

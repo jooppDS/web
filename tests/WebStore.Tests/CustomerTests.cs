@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 using WebStore.Models;
 
 namespace WebStore.Tests;
@@ -5,6 +7,21 @@ namespace WebStore.Tests;
 [TestFixture]
 public class CustomerTests
 {
+    [SetUp]
+    public void SetUp()
+    {
+        var type = typeof(Customer);
+        var extentField = type.GetField("_extent", BindingFlags.NonPublic | BindingFlags.Static);
+        if (extentField != null)
+        {
+            var extent = extentField.GetValue(null);
+            if (extent is System.Collections.IList list)
+            {
+                list.Clear();
+            }
+        }
+    }
+    
     [Test]
     public void CustomerCreatedProperly()
     {
@@ -42,5 +59,14 @@ public class CustomerTests
         if (DateTime.Today < new DateTime(DateTime.Today.Year, 11, 10))
             expectedAge--;
         Assert.That(customer.Age, Is.EqualTo(expectedAge));
+    }
+
+    [Test]
+    public void NullShippingAddressThrowsArgumentNullException()
+    {
+        var customer = new Customer(new DateTime(2000, 11, 10));
+        var context = new ValidationContext(customer);
+        customer.ShippingAddress = null;
+        Assert.Throws<ValidationException>(() => Validator.ValidateObject(customer, context, true));
     }
 }

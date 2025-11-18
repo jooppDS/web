@@ -1,4 +1,5 @@
-﻿using WebStore.Models;
+﻿using System.Reflection;
+using WebStore.Models;
 
 namespace WebStore.Tests;
 
@@ -10,6 +11,21 @@ public class PersonTests
         public TestPerson(string firstName, string lastName, string phoneNumber)
             : base(firstName, lastName, phoneNumber)
         {
+        }
+    }
+    
+    [SetUp]
+    public void SetUp()
+    {
+        var type = typeof(TestPerson);
+        var extentField = type.GetField("_extent", BindingFlags.NonPublic | BindingFlags.Static);
+        if (extentField != null)
+        {
+            var extent = extentField.GetValue(null);
+            if (extent is System.Collections.IList list)
+            {
+                list.Clear();
+            }
         }
     }
     
@@ -54,5 +70,12 @@ public class PersonTests
         Assert.Throws<ArgumentException>(() => person.PhoneNumber = "abc123");
         Assert.Throws<ArgumentException>(() => person.PhoneNumber = "+012345");
         Assert.Throws<ArgumentException>(() => person.PhoneNumber = "+12345678901234567");
+    }
+
+    [Test]
+    public void InvalidLegalAdultAgeThrowsArgumentOutOfRangeException()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() => Person.LegalAdultAge = 0);
+        Assert.Throws<ArgumentOutOfRangeException>(() => Person.LegalAdultAge = 151);
     }
 }

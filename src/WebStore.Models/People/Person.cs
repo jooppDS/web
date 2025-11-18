@@ -10,6 +10,7 @@ namespace WebStore.Models
         private string _firstName = string.Empty;
         private string _lastName = string.Empty;
         private string _phoneNumber = string.Empty;
+        private static int _legalAdultAge = 18;
 
         [Required(ErrorMessage = "First name is required")]
         [StringLength(50, MinimumLength = 2, ErrorMessage = "First name must be between 2 and 50 characters")]
@@ -57,7 +58,17 @@ namespace WebStore.Models
         }
 
         [Range(1, 150, ErrorMessage = "Legal adult age must be between 1 and 150")]
-        public static int LegalAdultAge { get; set; } = 18;
+        public static int LegalAdultAge
+        {
+            get => _legalAdultAge;
+            set
+            {
+                if (value < 1 || value > 150)
+                    throw new ArgumentOutOfRangeException(nameof(LegalAdultAge),
+                        "Legal adult age must be between 1 and 150");
+                _legalAdultAge = value;
+            }
+        }
 
         public static List<Person> GetAll()
         {

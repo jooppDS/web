@@ -38,7 +38,7 @@ namespace WebStore.Models
             }
         }
 
-        [MinLength(0, ErrorMessage = "Shipping address list cannot be null")]
+        [Required(ErrorMessage = "Shipping address list cannot be null")]
         public List<Address> ShippingAddress { get; set; } = new();
 
         public static List<Customer> GetAll()

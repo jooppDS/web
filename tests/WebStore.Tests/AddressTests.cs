@@ -1,3 +1,4 @@
+using System.Reflection;
 using WebStore.Models.ValueObjects;
 
 namespace WebStore.Tests;
@@ -5,6 +6,21 @@ namespace WebStore.Tests;
 [TestFixture]
 public class AddressTests
 {
+    [SetUp]
+    public void SetUp()
+    {
+        var type = typeof(Address);
+        var extentField = type.GetField("_extent", BindingFlags.NonPublic | BindingFlags.Static);
+        if (extentField != null)
+        {
+            var extent = extentField.GetValue(null);
+            if (extent is System.Collections.IList list)
+            {
+                list.Clear();
+            }
+        }
+    }
+    
     [Test]
     public void AddressCreatedProperly()
     {
