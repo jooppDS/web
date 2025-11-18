@@ -11,7 +11,7 @@ namespace WebStore.Models
         private string _description = string.Empty;
         private decimal _price;
         private bool _isAdultProduct;
-        private decimal _storeFeePercentage = 5;
+        private static decimal _storeFeePercentage = 5;
         private decimal _weight;
         private int _stockQuantity;
 
