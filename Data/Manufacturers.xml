@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfManufacturer xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Manufacturer>
+    <Name>TechCorp</Name>
+    <Address>
+      <Street>Main Street</Street>
+      <City>Moscow</City>
+      <State>Moscow Oblast</State>
+      <PostalCode>101000</PostalCode>
+      <Country>Russia</Country>
+    </Address>
+  </Manufacturer>
+  <Manufacturer>
+    <Name>JapanElectronics</Name>
+    <Address>
+      <Street>Lenin Avenue</Street>
+      <City>Saint Petersburg</City>
+      <State>Leningrad Oblast</State>
+      <PostalCode>190000</PostalCode>
+      <Country>Russia</Country>
+    </Address>
+  </Manufacturer>
+  <Manufacturer>
+    <Name>EuropeanManufacturing</Name>
+    <Address>
+      <Street>Champs-Élysées</Street>
+      <City>Paris</City>
+      <State>Île-de-France</State>
+      <PostalCode>75008</PostalCode>
+      <Country>France</Country>
+    </Address>
+  </Manufacturer>
+</ArrayOfManufacturer>
