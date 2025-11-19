@@ -99,10 +99,6 @@ public class PersonTests
         Assert.That(Employee.GetAll().Count, Is.EqualTo(0));
         Assert.That(Customer.GetAll().Count, Is.EqualTo(0));
         
-        var personInitValue = Person.GetAll().Count;
-        var employeeInitValue = Employee.GetAll().Count;
-        var customerInitValue = Customer.GetAll().Count;
-        
         var employee = new Employee("Vasilii", "Pupkinidze", "+123456789", EmployeeRole.Manager, 123);
         var customer = new Customer("Vasia", "Pupkin", "+12345678", new DateTime(2000, 11, 10));
         
