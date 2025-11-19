@@ -1,8 +1,11 @@
 using System.ComponentModel.DataAnnotations;
+using System.Xml.Serialization;
 using WebStore.Models.Persistence;
 
 namespace WebStore.Models
 {
+    [XmlInclude(typeof(Employee))]
+    [XmlInclude(typeof(Customer))]
     public abstract class Person
     {
         private static List<Person> _extent = new List<Person>();

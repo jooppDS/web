@@ -27,7 +27,7 @@ public class CustomerTests
     {
         var initialCount = Customer.GetAll().Count;
 
-        var customer = new Customer(new DateTime(2000, 11, 10));
+        var customer = new Customer("Vasia", "Pupkin", "+12345678", new DateTime(2000, 11, 10));
         Assert.That(Customer.GetAll().Count, Is.EqualTo(initialCount + 1));
         Assert.That(customer.DateOfBirth, Is.EqualTo(new DateTime(2000, 11, 10)));
         Assert.That(customer.ShippingAddress, Is.Not.Null);
@@ -38,7 +38,7 @@ public class CustomerTests
     public void DateOfBirthThrowsIfIsInFuture()
     {
         var futureDate = DateTime.Today.AddDays(1);
-        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new Customer(futureDate));
+        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new Customer("test", "test", "+12345678", futureDate));
         Assert.That(ex!.Message, Does.Contain("cannot be in the future"));
     }
 
@@ -46,7 +46,7 @@ public class CustomerTests
     public void DateOfBirthThrowsWhenMoreThan150YearsAgo()
     {
         var oldDate = DateTime.Today.AddYears(-151);
-        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new Customer(oldDate));
+        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new Customer("test", "test", "+12345678", oldDate));
         Assert.That(ex!.Message, Does.Contain("more than 150 years ago"));
     }
 
@@ -54,7 +54,7 @@ public class CustomerTests
     public void AgeCalculatedCorrectly()
     {
         var dob = new DateTime(2000, 11, 10);
-        var customer = new Customer(dob);
+        var customer = new Customer("Vasia", "Pupkin", "+12345678", dob);
         var expectedAge = DateTime.Today.Year - 2000;
         if (DateTime.Today < new DateTime(DateTime.Today.Year, 11, 10))
             expectedAge--;
@@ -64,7 +64,7 @@ public class CustomerTests
     [Test]
     public void NullShippingAddressThrowsArgumentNullException()
     {
-        var customer = new Customer(new DateTime(2000, 11, 10));
+        var customer = new Customer("Vasia", "Pupkin", "+12345678", new DateTime(2000, 11, 10));
         var context = new ValidationContext(customer);
         customer.ShippingAddress = null!;
         Assert.Throws<ValidationException>(() => Validator.ValidateObject(customer, context, true));

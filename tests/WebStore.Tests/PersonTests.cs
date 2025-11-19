@@ -1,5 +1,7 @@
 ﻿using System.Reflection;
 using WebStore.Models;
+using WebStore.Models.Enums;
+using WebStore.Models.Persistence;
 
 namespace WebStore.Tests;
 
@@ -14,10 +16,17 @@ public class PersonTests
         }
     }
     
+    private string _testDir = "../../../Data";
+    
     [SetUp]
     public void SetUp()
     {
-        var type = typeof(TestPerson);
+        ClearExtent<Person>();
+    }
+    
+    private static void ClearExtent<T>()
+    {
+        var type = typeof(T);
         var extentField = type.GetField("_extent", BindingFlags.NonPublic | BindingFlags.Static);
         if (extentField != null)
         {
@@ -77,5 +86,57 @@ public class PersonTests
     {
         Assert.Throws<ArgumentOutOfRangeException>(() => Person.LegalAdultAge = 0);
         Assert.Throws<ArgumentOutOfRangeException>(() => Person.LegalAdultAge = 151);
+    }
+    
+    [Test]
+    public void ExtentCreationSavingAndLoadingWorksCorrectlyWithDerivedClasses()
+    {
+        ClearExtent<Person>();
+        ClearExtent<Employee>();
+        ClearExtent<Customer>();
+        
+        Assert.That(Person.GetAll().Count, Is.EqualTo(0));
+        Assert.That(Employee.GetAll().Count, Is.EqualTo(0));
+        Assert.That(Customer.GetAll().Count, Is.EqualTo(0));
+        
+        var personInitValue = Person.GetAll().Count;
+        var employeeInitValue = Employee.GetAll().Count;
+        var customerInitValue = Customer.GetAll().Count;
+        
+        var employee = new Employee("Vasilii", "Pupkinidze", "+123456789", EmployeeRole.Manager, 123);
+        var customer = new Customer("Vasia", "Pupkin", "+12345678", new DateTime(2000, 11, 10));
+        
+        Assert.That(Person.GetAll().Count, Is.EqualTo(2));
+        Assert.That(Employee.GetAll().Count, Is.EqualTo(1));
+        Assert.That(Customer.GetAll().Count, Is.EqualTo(1));
+        
+        Employee.SaveToXml(_testDir);
+        Customer.SaveToXml(_testDir);
+        Person.SaveToXml(_testDir);
+        
+        Assert.That(XmlPersistenceService.FileExists("Persons", _testDir), Is.True);
+        Assert.That(XmlPersistenceService.FileExists("Employees", _testDir), Is.True);
+        Assert.That(XmlPersistenceService.FileExists("Customers", _testDir), Is.True);
+        
+        ClearExtent<Person>();
+        ClearExtent<Employee>();
+        ClearExtent<Customer>();
+        
+        Assert.That(Person.GetAll().Count, Is.EqualTo(0));
+        Assert.That(Employee.GetAll().Count, Is.EqualTo(0));
+        Assert.That(Customer.GetAll().Count, Is.EqualTo(0));
+        
+        Employee.LoadFromXml(_testDir);
+        Customer.LoadFromXml(_testDir);
+        Person.LoadFromXml(_testDir);
+        
+        Assert.That(Person.GetAll().Count, Is.EqualTo(2));
+        Assert.That(Employee.GetAll().Count, Is.EqualTo(1));
+        Assert.That(Customer.GetAll().Count, Is.EqualTo(1));
+        
+        Assert.That(Employee.GetAll()[0].FirstName, Is.EqualTo(employee.FirstName));
+        Assert.That(Employee.GetAll()[0].Salary, Is.EqualTo(employee.Salary));
+        Assert.That(Customer.GetAll()[0].FirstName, Is.EqualTo(customer.FirstName));
+        Assert.That(Customer.GetAll()[0].DateOfBirth, Is.EqualTo(customer.DateOfBirth));
     }
 }

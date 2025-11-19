@@ -4,7 +4,7 @@ using WebStore.Models.Persistence;
 
 namespace WebStore.Models
 {
-    public class Customer
+    public class Customer : Person
     {
         private static List<Customer> _extent = new List<Customer>();
 
@@ -47,13 +47,13 @@ namespace WebStore.Models
         }
 
     
-        public static void SaveToXml(string? directory = null)
+        public new static void SaveToXml(string? directory = null)
         {
             XmlPersistenceService.SaveToXml(_extent, "Customers", directory);
         }
 
         
-        public static void LoadFromXml(string? directory = null)
+        public new static void LoadFromXml(string? directory = null)
         {
             if (!XmlPersistenceService.FileExists("Customers", directory))
                 return;
@@ -74,7 +74,8 @@ namespace WebStore.Models
             
         }
 
-        public Customer(DateTime dateOfBirth)
+        public Customer(string firstName, string lastName, string phoneNumber, DateTime dateOfBirth) 
+            : base(firstName, lastName, phoneNumber)
         {
             DateOfBirth = dateOfBirth;
             _extent.Add(this);

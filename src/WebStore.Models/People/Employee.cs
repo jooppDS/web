@@ -43,12 +43,12 @@ namespace WebStore.Models
             return new List<Employee>(_extent);
         }
 
-        public static void SaveToXml(string? directory = null)
+        public new static void SaveToXml(string? directory = null)
         {
             XmlPersistenceService.SaveToXml(_extent, "Employees", directory);
         }
 
-        public static void LoadFromXml(string? directory = null)
+        public new static void LoadFromXml(string? directory = null)
         {
             if (!XmlPersistenceService.FileExists("Employees", directory))
                 return;
