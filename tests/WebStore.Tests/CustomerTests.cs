@@ -66,7 +66,7 @@ public class CustomerTests
     {
         var customer = new Customer(new DateTime(2000, 11, 10));
         var context = new ValidationContext(customer);
-        customer.ShippingAddress = null;
+        customer.ShippingAddress = null!;
         Assert.Throws<ValidationException>(() => Validator.ValidateObject(customer, context, true));
     }
 }

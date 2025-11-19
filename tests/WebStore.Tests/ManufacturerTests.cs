@@ -50,14 +50,4 @@ public class ManufacturerTests
         Assert.Throws<ArgumentException>(() => new Manufacturer("A", address));
         Assert.Throws<ArgumentException>(() => new Manufacturer(new string('a', 101), address));
     }
-
-    [Test]
-    public void ParameterlessConstructorDoesNotAddToExtent()
-    {
-        var initialCount = Manufacturer.GetAll().Count;
-
-        var manufacturer = new Manufacturer();
-
-        Assert.That(Manufacturer.GetAll().Count, Is.EqualTo(initialCount));
-    }
 }

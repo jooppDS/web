@@ -34,17 +34,17 @@ public class PersonTests
     {
         var initialCount = Person.GetAll().Count;
 
-        var person = new TestPerson("Yehor", "Lopasov", "+123456789");
+        var person = new TestPerson("Vasia", "Pupkin", "+123456789");
         Assert.That(Person.GetAll().Count, Is.EqualTo(initialCount + 1));
-        Assert.That(person.FirstName, Is.EqualTo("Yehor"));
-        Assert.That(person.LastName, Is.EqualTo("Lopasov"));
+        Assert.That(person.FirstName, Is.EqualTo("Vasia"));
+        Assert.That(person.LastName, Is.EqualTo("Pupkin"));
         Assert.That(person.PhoneNumber, Is.EqualTo("+123456789"));
     }
     
     [Test]
     public void InvalidFirstNameThrowsArgumentException()
     {
-        var person = new TestPerson("Yehor", "Lopasov", "+123456789");
+        var person = new TestPerson("Vasia", "Pupkin", "+123456789");
         Assert.Throws<ArgumentException>(() => person.FirstName = "");
         Assert.Throws<ArgumentException>(() => person.FirstName = null);
         Assert.Throws<ArgumentException>(() => person.FirstName = "A");
@@ -54,7 +54,7 @@ public class PersonTests
     [Test]
     public void InvalidLastNameThrowsArgumentException()
     {
-        var person = new TestPerson("Yehor", "Lopasov", "+123456789");
+        var person = new TestPerson("Vasia", "Pupkin", "+123456789");
         Assert.Throws<ArgumentException>(() => person.LastName = "");
         Assert.Throws<ArgumentException>(() => person.LastName = null);
         Assert.Throws<ArgumentException>(() => person.LastName = "A");
@@ -64,7 +64,7 @@ public class PersonTests
     [Test]
     public void InvalidPhoneNumberThrowsArgumentException()
     {
-        var person = new TestPerson("Yehor", "Lopasov", "+123456789");
+        var person = new TestPerson("Vasia", "Pupkin", "+123456789");
         Assert.Throws<ArgumentException>(() => person.PhoneNumber = "");
         Assert.Throws<ArgumentException>(() => person.PhoneNumber = null);
         Assert.Throws<ArgumentException>(() => person.PhoneNumber = "abc123");
