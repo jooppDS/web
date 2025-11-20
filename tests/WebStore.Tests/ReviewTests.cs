@@ -35,10 +35,10 @@ public class ReviewTests
     {
         var initialCount = Review.GetAll().Count;
 
-        var review = new Review(ReviewRating.FiveStars, "Good product");
+        var review = new Review(ReviewRating.FiveStars, "Zaebis");
         Assert.That(Review.GetAll().Count, Is.EqualTo(initialCount + 1));
         Assert.That(review.Rating, Is.EqualTo(ReviewRating.FiveStars));
-        Assert.That(review.Comment, Is.EqualTo("Good product"));
+        Assert.That(review.Comment, Is.EqualTo("Zaebis"));
     }
     
     [Test]

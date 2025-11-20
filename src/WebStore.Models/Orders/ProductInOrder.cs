@@ -54,14 +54,6 @@ namespace WebStore.Models
             Quantity = quantity;
             _extent.Add(this);
         }
-
-        public void EnsureCustomerCanPurchase(int customerAge, int legalAdultAge)
-        {
-            if (customerAge < 0)
-                throw new ArgumentOutOfRangeException(nameof(customerAge));
-            if (legalAdultAge < 0)
-                throw new ArgumentOutOfRangeException(nameof(legalAdultAge));
-        }
     }
 }
 

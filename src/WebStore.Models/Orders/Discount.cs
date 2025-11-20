@@ -61,15 +61,6 @@ namespace WebStore.Models
             }
         }
 
-        public bool IsActive
-        {
-            get
-            {
-                var now = DateTime.Now;
-                return now >= StartDate && now <= EndDate;
-            }
-        }
-
         public static List<Discount> GetAll()
         {
             return new List<Discount>(_extent);
