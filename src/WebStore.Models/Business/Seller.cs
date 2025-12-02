@@ -109,8 +109,11 @@ namespace WebStore.Models
 
         public void Delete()
         {
-            if (Products.Count > 0)
-                throw new InvalidOperationException("Cannot delete seller while it still has products assigned. Reassign or delete the products first.");
+            var products = new List<Product>(Products);
+            foreach (var product in products)
+            {
+                product.Delete();
+            }
 
             _extent.Remove(this);
         }

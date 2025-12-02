@@ -158,6 +158,18 @@ namespace WebStore.Models
             return new List<Product>(_extent);
         }
 
+        public void Delete()
+        {
+            var items = new List<ProductInOrder>(_productsInOrder);
+            foreach (var productInOrder in items)
+            {
+                productInOrder.Delete();
+            }
+
+            _seller.RemoveProductInternal(this);
+            _extent.Remove(this);
+        }
+
         public static void SaveToXml(string? directory = null)
         {
             XmlPersistenceService.SaveToXml(_extent, "Products", directory);

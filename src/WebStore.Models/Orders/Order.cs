@@ -164,5 +164,16 @@ namespace WebStore.Models
             IsHidden = isHidden;
             _extent.Add(this);
         }
+
+        public void Delete()
+        {
+            foreach (var productInOrder in _productsInOrder.ToList())
+            {
+                productInOrder.Delete();
+            }
+
+            _customer.RemoveOrderInternal(this);
+            _extent.Remove(this);
+        }
     }
 }
