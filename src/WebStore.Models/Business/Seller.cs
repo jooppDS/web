@@ -8,6 +8,8 @@ namespace WebStore.Models
     {
         private static List<Seller> _extent = new List<Seller>();
 
+        private readonly Dictionary<string, Product> _productsByName = new(StringComparer.OrdinalIgnoreCase);
+
         private string _name = string.Empty;
         private Address _address = null!;
 
@@ -38,6 +40,8 @@ namespace WebStore.Models
             }
         }
 
+        public IReadOnlyCollection<Product> Products => _productsByName.Values.ToList().AsReadOnly();
+
         public static List<Seller> GetAll()
         {
             return new List<Seller>(_extent);
@@ -60,6 +64,55 @@ namespace WebStore.Models
             {
                 _extent.Add(seller);
             }
+        }
+
+        internal void AddProductInternal(Product product)
+        {
+            if (product is null)
+                throw new ArgumentNullException(nameof(product));
+
+            if (_productsByName.TryGetValue(product.Name, out var existing) && !ReferenceEquals(existing, product))
+                throw new InvalidOperationException("A different product with the same name is already associated with this seller.");
+
+            _productsByName[product.Name] = product;
+        }
+
+        internal void RemoveProductInternal(Product product)
+        {
+            if (product is null)
+                throw new ArgumentNullException(nameof(product));
+
+            _productsByName.Remove(product.Name);
+        }
+
+        public void AddProduct(Product product)
+        {
+            if (product is null)
+                throw new ArgumentNullException(nameof(product));
+
+            if (product.Seller == this)
+                throw new InvalidOperationException("Product is already associated with this seller.");
+
+            product.ChangeSeller(this);
+        }
+
+        public void RemoveProduct(Product product)
+        {
+            if (product is null)
+                throw new ArgumentNullException(nameof(product));
+
+            if (!_productsByName.TryGetValue(product.Name, out var existing) || !ReferenceEquals(existing, product))
+                throw new InvalidOperationException("Product is not associated with this seller.");
+
+            throw new InvalidOperationException("Cannot remove seller from product because a product must always have an associated seller.");
+        }
+
+        public void Delete()
+        {
+            if (Products.Count > 0)
+                throw new InvalidOperationException("Cannot delete seller while it still has products assigned. Reassign or delete the products first.");
+
+            _extent.Remove(this);
         }
 
         public Seller()

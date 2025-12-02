@@ -97,8 +97,8 @@ namespace WebStore.Models
         }
 
         public Clothing(string name, string description, decimal price, bool isAdultProduct, decimal weight, int stockQuantity, 
-            List<string> materials, ClothingSize size, Gender gender, string careInstruction, decimal storeFeePercentage = 5)
-            : base(name, description, price, isAdultProduct, weight, stockQuantity, storeFeePercentage)
+            List<string> materials, ClothingSize size, Gender gender, string careInstruction, Seller seller, decimal storeFeePercentage = 5)
+            : base(name, description, price, isAdultProduct, weight, stockQuantity, seller, storeFeePercentage)
         {
             Materials = materials;
             Size = size;

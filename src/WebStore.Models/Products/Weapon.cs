@@ -83,8 +83,8 @@ namespace WebStore.Models
         }
 
         public Weapon(string name, string description, decimal price, bool isAdultProduct, decimal weight, int stockQuantity, 
-            string caliber, int numberOfRounds, decimal range, decimal storeFeePercentage = 5)
-            : base(name, description, price, isAdultProduct, weight, stockQuantity, storeFeePercentage)
+            string caliber, int numberOfRounds, decimal range, Seller seller, decimal storeFeePercentage = 5)
+            : base(name, description, price, isAdultProduct, weight, stockQuantity, seller, storeFeePercentage)
         {
             Caliber = caliber;
             NumberOfRounds = numberOfRounds;

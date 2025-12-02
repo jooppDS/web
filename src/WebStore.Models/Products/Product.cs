@@ -14,6 +14,8 @@ namespace WebStore.Models
         private static decimal _storeFeePercentage = 5;
         private decimal _weight;
         private int _stockQuantity;
+        private Seller _seller = null!;
+        private readonly List<ProductInOrder> _productsInOrder = new();
 
         [Required(ErrorMessage = "Name is required")]
         [StringLength(100, MinimumLength = 2, ErrorMessage = "Name must be between 2 and 100 characters")]
@@ -106,6 +108,50 @@ namespace WebStore.Models
             }
         }
 
+        [Required(ErrorMessage = "Seller is required")]
+        public Seller Seller
+        {
+            get => _seller;
+            private set
+            {
+                if (value is null)
+                    throw new ArgumentNullException(nameof(Seller), "Seller cannot be null");
+
+                if (ReferenceEquals(_seller, value))
+                    return;
+
+                var oldSeller = _seller;
+                _seller = value;
+
+                if (oldSeller != null)
+                {
+                    oldSeller.RemoveProductInternal(this);
+                }
+
+                value.AddProductInternal(this);
+            }
+        }
+
+        public void ChangeSeller(Seller newSeller)
+        {
+            Seller = newSeller;
+        }
+
+        public IReadOnlyCollection<ProductInOrder> ProductsInOrder => _productsInOrder.AsReadOnly();
+
+        internal void AddProductInOrderInternal(ProductInOrder productInOrder)
+        {
+            if (!_productsInOrder.Contains(productInOrder))
+            {
+                _productsInOrder.Add(productInOrder);
+            }
+        }
+
+        internal void RemoveProductInOrderInternal(ProductInOrder productInOrder)
+        {
+            _productsInOrder.Remove(productInOrder);
+        }
+
 
         public static List<Product> GetAll()
         {
@@ -135,7 +181,7 @@ namespace WebStore.Models
         {
         }
 
-        protected Product(string name, string description, decimal price, bool isAdultProduct, decimal weight, int stockQuantity, decimal storeFeePercentage = 5)
+        protected Product(string name, string description, decimal price, bool isAdultProduct, decimal weight, int stockQuantity, Seller seller, decimal storeFeePercentage = 5)
         {
             Name = name;
             Description = description;
@@ -144,6 +190,7 @@ namespace WebStore.Models
             Weight = weight;
             StockQuantity = stockQuantity;
             StoreFeePercentage = storeFeePercentage;
+            Seller = seller ?? throw new ArgumentNullException(nameof(seller));
             _extent.Add(this);
         }
     }

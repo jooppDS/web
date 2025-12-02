@@ -12,6 +12,8 @@ namespace WebStore.Models
         private OrderStatus _status;
         private DeliveryType _deliveryType;
         private bool _isHidden;
+        private Customer _customer = null!;
+        private readonly List<ProductInOrder> _productsInOrder = new();
 
         [Required(ErrorMessage = "Date is required")]
         public DateTime Date
@@ -49,7 +51,80 @@ namespace WebStore.Models
         public bool IsHidden
         {
             get => _isHidden;
-            set => _isHidden = value;
+            private set => _isHidden = value;
+        }
+
+        [Required(ErrorMessage = "Customer is required")]
+        public Customer Customer
+        {
+            get => _customer;
+            private set
+            {
+                if (value is null)
+                    throw new ArgumentNullException(nameof(Customer), "Customer cannot be null");
+
+                if (ReferenceEquals(_customer, value))
+                    return;
+
+                var oldCustomer = _customer;
+                _customer = value;
+
+                if (oldCustomer != null)
+                {
+                    oldCustomer.RemoveOrderInternal(this);
+                }
+
+                value.AddOrderInternal(this);
+            }
+        }
+
+        public IReadOnlyCollection<ProductInOrder> ProductsInOrder => _productsInOrder.AsReadOnly();
+
+        public void ChangeCustomer(Customer customer)
+        {
+            Customer = customer;
+        }
+
+        public void ChangeVisibility(bool isHidden)
+        {
+            IsHidden = isHidden;
+        }
+
+        internal void AddProductInOrderInternal(ProductInOrder productInOrder)
+        {
+            if (!_productsInOrder.Contains(productInOrder))
+            {
+                _productsInOrder.Add(productInOrder);
+            }
+        }
+
+        internal void RemoveProductInOrderInternal(ProductInOrder productInOrder)
+        {
+            _productsInOrder.Remove(productInOrder);
+        }
+
+        internal int GetProductInOrdersInternalCount()
+        {
+            return _productsInOrder.Count;
+        }
+
+        public ProductInOrder AddProduct(Product product, int quantity)
+        {
+            if (product is null)
+                throw new ArgumentNullException(nameof(product));
+
+            return new ProductInOrder(product, this, quantity);
+        }
+
+        public void RemoveProductInOrder(ProductInOrder productInOrder)
+        {
+            if (productInOrder is null)
+                throw new ArgumentNullException(nameof(productInOrder));
+
+            if (!_productsInOrder.Contains(productInOrder))
+                throw new InvalidOperationException("Given product line is not part of this order.");
+
+            productInOrder.Delete();
         }
 
         public static List<Order> GetAll()
@@ -80,11 +155,12 @@ namespace WebStore.Models
         {
         }
 
-        public Order(DateTime date, OrderStatus status, DeliveryType deliveryType, bool isHidden = false)
+        public Order(DateTime date, OrderStatus status, DeliveryType deliveryType, Customer customer, bool isHidden = false)
         {
             Date = date;
             Status = status;
             DeliveryType = deliveryType;
+            Customer = customer ?? throw new ArgumentNullException(nameof(customer));
             IsHidden = isHidden;
             _extent.Add(this);
         }
