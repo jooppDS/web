@@ -127,4 +127,42 @@ public class AssociationWithAttributeTests
         Assert.That(product.ProductsInOrder.Contains(productInOrder), Is.False);
         Assert.That(product.ProductsInOrder.Count, Is.EqualTo(0));
     }
+
+    [Test]
+    public void Product_RemoveProductInOrder_ShouldDeleteProductInOrder()
+    {
+        var order = new Order(new DateTime(1, 1, 1), OrderStatus.Pending, DeliveryType.Delivery, new Customer());
+        var product1 = new New("product1", "description", 10, false, 10, 10, new TimeSpan(1), new Seller());
+        var product2 = new New("product2", "description", 10, false, 10, 10, new TimeSpan(1), new Seller());
+        
+        var productInOrder = order.AddProduct(product1, 1);
+        var productInOrder2 = order.AddProduct(product2, 1);
+        Assert.That(ProductInOrder.GetAll().Contains(productInOrder), Is.True);
+        Assert.That(order.ProductsInOrder.Contains(productInOrder), Is.True);
+        
+        product1.RemoveProductInOrder(productInOrder);
+        Assert.That(ProductInOrder.GetAll().Contains(productInOrder), Is.False);
+        Assert.That(ProductInOrder.GetAll().Count, Is.EqualTo(1));
+        Assert.That(order.ProductsInOrder.Contains(productInOrder), Is.False);
+        Assert.That(order.ProductsInOrder.Count, Is.EqualTo(1));
+    }
+    
+    [Test]
+    public void Order_RemoveProductInOrder_ShouldDeleteProductInOrder()
+    {
+        var order = new Order(new DateTime(1, 1, 1), OrderStatus.Pending, DeliveryType.Delivery, new Customer());
+        var product1 = new New("product1", "description", 10, false, 10, 10, new TimeSpan(1), new Seller());
+        var product2 = new New("product2", "description", 10, false, 10, 10, new TimeSpan(1), new Seller());
+        
+        var productInOrder = order.AddProduct(product1, 1);
+        var productInOrder2 = order.AddProduct(product2, 1);
+        Assert.That(ProductInOrder.GetAll().Contains(productInOrder), Is.True);
+        Assert.That(order.ProductsInOrder.Contains(productInOrder), Is.True);
+        
+        order.RemoveProductInOrder(productInOrder);
+        Assert.That(ProductInOrder.GetAll().Contains(productInOrder), Is.False);
+        Assert.That(ProductInOrder.GetAll().Count, Is.EqualTo(1));
+        Assert.That(order.ProductsInOrder.Contains(productInOrder), Is.False);
+        Assert.That(order.ProductsInOrder.Count, Is.EqualTo(1));
+    }
 }

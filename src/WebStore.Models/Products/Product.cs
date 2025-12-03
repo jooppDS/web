@@ -164,6 +164,17 @@ namespace WebStore.Models
             
             return new ProductInOrder(this, order, quantity);
         }
+        
+        public void RemoveProductInOrder(ProductInOrder productInOrder)
+        {
+            if (productInOrder is null)
+                throw new ArgumentNullException(nameof(productInOrder));
+
+            if (!_productsInOrder.Contains(productInOrder))
+                throw new InvalidOperationException("Given product line is not part of this order.");
+
+            productInOrder.Delete();
+        }
 
         public static List<Product> GetAll()
         {
