@@ -68,8 +68,8 @@ namespace WebStore.Models
         }
 
         public Used(string name, string description, decimal price, bool isAdultProduct, decimal weight, int stockQuantity, 
-            ProductCondition condition, string defectsDescription, Seller seller, decimal storeFeePercentage = 5)
-            : base(name, description, price, isAdultProduct, weight, stockQuantity, seller, storeFeePercentage)
+            ProductCondition condition, string defectsDescription, Seller seller)
+            : base(name, description, price, isAdultProduct, weight, stockQuantity, seller)
         {
             Condition = condition;
             DefectsDescription = defectsDescription;

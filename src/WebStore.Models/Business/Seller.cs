@@ -41,7 +41,7 @@ namespace WebStore.Models
         }
 
         public IReadOnlyCollection<Product> Products => _productsByName.Values.ToList().AsReadOnly();
-
+        
         public static List<Seller> GetAll()
         {
             return new List<Seller>(_extent);
@@ -104,7 +104,7 @@ namespace WebStore.Models
             if (!_productsByName.TryGetValue(product.Name, out var existing) || !ReferenceEquals(existing, product))
                 throw new InvalidOperationException("Product is not associated with this seller.");
 
-            throw new InvalidOperationException("Cannot remove seller from product because a product must always have an associated seller.");
+            product.Delete();
         }
 
         public void Delete()

@@ -123,16 +123,16 @@ namespace WebStore.Models
             Order = order;
         }
 
-        public void Delete()
+        public void Delete(bool forceDelete = false)
         {
-            if (OrderItemsCountForOrderIsOne())
+            if (forceDelete == false && OrderItemsCountForOrderIsOne())
                 throw new InvalidOperationException("Cannot remove the last product from an order. An order must contain at least one product.");
 
             _extent.Remove(this);
             _product.RemoveProductInOrderInternal(this);
             _order.RemoveProductInOrderInternal(this);
         }
-
+        
         private bool OrderItemsCountForOrderIsOne()
         {
             return Order.GetProductInOrdersInternalCount() == 1;

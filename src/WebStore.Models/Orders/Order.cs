@@ -169,7 +169,7 @@ namespace WebStore.Models
         {
             foreach (var productInOrder in _productsInOrder.ToList())
             {
-                productInOrder.Delete();
+                productInOrder.Delete(true);
             }
 
             _customer.RemoveOrderInternal(this);

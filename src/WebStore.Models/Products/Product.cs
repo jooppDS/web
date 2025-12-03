@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Xml.Serialization;
 using WebStore.Models.Persistence;
 
 namespace WebStore.Models
@@ -28,6 +29,10 @@ namespace WebStore.Models
                     throw new ArgumentException("Name cannot be null or empty", nameof(Name));
                 if (value.Length < 2 || value.Length > 100)
                     throw new ArgumentException("Name must be between 2 and 100 characters", nameof(Name));
+                bool nameExists = _extent.Any(p => p != this && 
+                                                   string.Equals(p.Name, value, StringComparison.OrdinalIgnoreCase));
+                if (nameExists)
+                    throw new InvalidOperationException("A product with this name already exists.");
                 _name = value;
             }
         }
@@ -136,7 +141,7 @@ namespace WebStore.Models
         {
             Seller = newSeller;
         }
-
+        
         public IReadOnlyCollection<ProductInOrder> ProductsInOrder => _productsInOrder.AsReadOnly();
 
         internal void AddProductInOrderInternal(ProductInOrder productInOrder)
@@ -152,6 +157,13 @@ namespace WebStore.Models
             _productsInOrder.Remove(productInOrder);
         }
 
+        public ProductInOrder AddProductToOrder(Order order, int quantity)
+        {
+            if (order is null)
+                throw new ArgumentNullException(nameof(order), "Order cannot be null");
+            
+            return new ProductInOrder(this, order, quantity);
+        }
 
         public static List<Product> GetAll()
         {
@@ -193,7 +205,7 @@ namespace WebStore.Models
         {
         }
 
-        protected Product(string name, string description, decimal price, bool isAdultProduct, decimal weight, int stockQuantity, Seller seller, decimal storeFeePercentage = 5)
+        protected Product(string name, string description, decimal price, bool isAdultProduct, decimal weight, int stockQuantity, Seller seller)
         {
             Name = name;
             Description = description;
@@ -201,7 +213,6 @@ namespace WebStore.Models
             IsAdultProduct = isAdultProduct;
             Weight = weight;
             StockQuantity = stockQuantity;
-            StoreFeePercentage = storeFeePercentage;
             Seller = seller ?? throw new ArgumentNullException(nameof(seller));
             _extent.Add(this);
         }
