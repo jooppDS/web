@@ -4,12 +4,11 @@ using WebStore.Models.Enums;
 
 namespace WebStore.Tests;
 
-
 [TestFixture]
 public class BasicAssociationTests
 {
     [SetUp]
-    public void Setup()
+    public void SetUp()
     {
         ClearExtent<Order>();
         ClearExtent<Customer>();
@@ -30,7 +29,6 @@ public class BasicAssociationTests
     }
 
     [Test]
-
     public void CreatingOder_AssociatesWithCustomer()
     {
         var customer = new Customer("Viktor", "Korneplod", "88005553535", new DateTime(1945, 1, 1));
@@ -42,7 +40,6 @@ public class BasicAssociationTests
     }
 
     [Test]
-
     public void AddOrder_UpdatesBothSides()
     {
         var c1 = new Customer("Viktor", "Korneplod", "88005553535", new DateTime(1945, 1, 1));
@@ -51,15 +48,14 @@ public class BasicAssociationTests
         var order = new Order(new DateTime(1, 1, 1), OrderStatus.Pending, DeliveryType.Delivery, c1);
         
         c2.AddOrder(order);
-        
-        Assert.False(c1.Orders.Contains(order));
+
         Assert.True(c2.Orders.Contains(order));
+        Assert.False(c1.Orders.Contains(order));
         Assert.That(order.Customer, Is.EqualTo(c2));
         
     }
 
     [Test]
-    
     public void AddExistingAssociation_Throws()
     {
         var customer = new Customer("Viktor", "Korneplod", "88005553535", new DateTime(1945, 1, 1));
@@ -89,6 +85,7 @@ public class BasicAssociationTests
         order.ChangeCustomer(c2);
         
         Assert.True(c2.Orders.Contains(order));
+        Assert.False(c1.Orders.Contains(order));
         Assert.That(order.Customer, Is.EqualTo(c2));
     }
 
@@ -100,6 +97,7 @@ public class BasicAssociationTests
         
         order.Delete();
         
+        Assert.False(Order.GetAll().Contains(order));
         Assert.False(customer.Orders.Contains(order));
     }
 
