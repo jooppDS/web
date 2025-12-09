@@ -61,14 +61,12 @@ namespace WebStore.Models
             private set => LinkCustomer(value ?? throw new ArgumentNullException(nameof(Customer), "Customer cannot be null"));
         }
 
-        internal void ChangeCustomer(Customer customer)
+        public void ChangeCustomer(Customer customer)
         {
             Customer = customer;
         }
 
-        internal void SetCustomerInternal(Customer customer) => LinkCustomer(customer);
 
-        internal void RemoveCustomerInternal(Customer customer) => UnlinkCustomer(customer);
 
         public IReadOnlyCollection<ProductInOrder> ProductsInOrder => _productsInOrder.AsReadOnly();
 
@@ -77,32 +75,17 @@ namespace WebStore.Models
             IsHidden = isHidden;
         }
 
-        internal void AddProductInOrderInternal(ProductInOrder productInOrder) => LinkProductInOrder(productInOrder);
-
-        internal void RemoveProductInOrderInternal(ProductInOrder productInOrder) => UnlinkProductInOrder(productInOrder);
-
-        internal int GetProductInOrdersInternalCount()
+        public int GetProductInOrdersCount()
         {
             return _productsInOrder.Count;
         }
 
-        internal ProductInOrder AddProduct(Product product, int quantity)
+        public ProductInOrder AddProduct(Product product, int quantity)
         {
             if (product is null)
                 throw new ArgumentNullException(nameof(product));
 
             return new ProductInOrder(product, this, quantity);
-        }
-
-        internal void RemoveProductInOrder(ProductInOrder productInOrder)
-        {
-            if (productInOrder is null)
-                throw new ArgumentNullException(nameof(productInOrder));
-
-            if (!_productsInOrder.Contains(productInOrder))
-                throw new InvalidOperationException("Given product line is not part of this order.");
-
-            productInOrder.Delete();
         }
 
         public static List<Order> GetAll()
@@ -152,11 +135,16 @@ namespace WebStore.Models
 
             if (_customer != null)
             {
-                RemoveCustomerInternal(_customer);
+                RemoveCustomer(_customer);
             }
 
             _extent.Remove(this);
         }
+
+
+        public void AddCustomer(Customer customer) => LinkCustomer(customer);
+
+        public void RemoveCustomer(Customer customer) => UnlinkCustomer(customer);
 
         private void LinkCustomer(Customer customer)
         {
@@ -169,11 +157,11 @@ namespace WebStore.Models
             var oldCustomer = _customer;
             _customer = customer;
 
-            customer.AddOrderInternal(this);
+            customer.AddOrder(this);
 
             if (oldCustomer != null && !ReferenceEquals(oldCustomer, customer))
             {
-                oldCustomer.RemoveOrderInternal(this);
+                oldCustomer.RemoveOrder(this, suppressException: true);
             }
         }
 
@@ -186,7 +174,22 @@ namespace WebStore.Models
                 return;
 
             _customer = null!;
-            customer.RemoveOrderInternal(this);
+            customer.RemoveOrder(this, suppressException: true);
+        }
+
+
+        public void AddProductInOrder(ProductInOrder productInOrder) => LinkProductInOrder(productInOrder);
+
+        public void RemoveProductInOrder(ProductInOrder productInOrder)
+        {
+            if (productInOrder is null)
+                throw new ArgumentNullException(nameof(productInOrder));
+
+            if (!_productsInOrder.Contains(productInOrder))
+                throw new InvalidOperationException("Given product line is not part of this order.");
+
+            _productsInOrder.Remove(productInOrder);
+            productInOrder.Delete(true);
         }
 
         private void LinkProductInOrder(ProductInOrder productInOrder)
@@ -198,7 +201,10 @@ namespace WebStore.Models
                 return;
 
             _productsInOrder.Add(productInOrder);
-            productInOrder.SetOrderInternal(this);
+            if (!ReferenceEquals(productInOrder.Order, this))
+            {
+                productInOrder.AddOrder(this);
+            }
         }
 
         private void UnlinkProductInOrder(ProductInOrder productInOrder)
@@ -209,7 +215,10 @@ namespace WebStore.Models
             if (!_productsInOrder.Remove(productInOrder))
                 return;
 
-            productInOrder.ClearOrderInternal(this);
+            if (ReferenceEquals(productInOrder.Order, this))
+            {
+                productInOrder.RemoveOrder(this);
+            }
         }
     }
 }

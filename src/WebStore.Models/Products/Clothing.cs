@@ -70,10 +70,7 @@ namespace WebStore.Models
 
         public IReadOnlyCollection<Clothing> RelatedClothing => _relatedClothing.AsReadOnly();
 
-        internal void AddRelatedClothingInternal(Clothing other) => LinkRelatedClothing(other);
-
-        internal void RemoveRelatedClothingInternal(Clothing other) => UnlinkRelatedClothing(other);
-
+    
         public static List<Clothing> GetAll()
         {
             return new List<Clothing>(_extent);
@@ -114,6 +111,11 @@ namespace WebStore.Models
             _extent.Add(this);
         }
 
+
+        public void AddRelatedClothing(Clothing other) => LinkRelatedClothing(other);
+
+        public void RemoveRelatedClothing(Clothing other) => UnlinkRelatedClothing(other);
+
         private void LinkRelatedClothing(Clothing other)
         {
             if (other is null)
@@ -126,7 +128,10 @@ namespace WebStore.Models
                 return;
 
             _relatedClothing.Add(other);
-            other.AddRelatedClothingInternal(this);
+            if (!other._relatedClothing.Contains(this))
+            {
+                other.AddRelatedClothing(this);
+            }
         }
 
         private void UnlinkRelatedClothing(Clothing other)
@@ -137,7 +142,10 @@ namespace WebStore.Models
             if (!_relatedClothing.Remove(other))
                 return;
 
-            other.RemoveRelatedClothingInternal(this);
+            if (other._relatedClothing.Contains(this))
+            {
+                other.RemoveRelatedClothing(this);
+            }
         }
     }
 }

@@ -69,9 +69,9 @@ namespace WebStore.Models
 
         public IReadOnlyCollection<Product> Products => _products.AsReadOnly();
 
-        internal void AddProductInternal(Product product) => LinkProduct(product);
+        public void AddProduct(Product product) => LinkProduct(product);
 
-        internal void RemoveProductInternal(Product product) => UnlinkProduct(product);
+        public void RemoveProduct(Product product) => UnlinkProduct(product);
 
         public static void SaveToXml(string? directory = null)
         {
@@ -114,7 +114,7 @@ namespace WebStore.Models
                 return;
 
             _products.Add(product);
-            product.AddDiscountInternal(this);
+            product.AddDiscount(this);
         }
 
         private void UnlinkProduct(Product product)
@@ -129,7 +129,7 @@ namespace WebStore.Models
                 throw new InvalidOperationException("Discount must be associated with at least one product.");
 
             _products.Remove(product);
-            product.RemoveDiscountInternal(this);
+            product.RemoveDiscount(this);
         }
     }
 }

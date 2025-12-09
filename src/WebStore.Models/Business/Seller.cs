@@ -66,28 +66,10 @@ namespace WebStore.Models
             }
         }
 
-        internal void AddProductInternal(Product product) => LinkProduct(product);
+        public void AddProduct(Product product) => LinkProduct(product);
 
-        internal void RemoveProductInternal(Product product) => UnlinkProduct(product);
+        public void RemoveProduct(Product product) => UnlinkProduct(product);
 
-        internal void AddProduct(Product product)
-        {
-            if (product is null)
-                throw new ArgumentNullException(nameof(product));
-
-            product.SetSellerInternal(this);
-        }
-
-        internal void RemoveProduct(Product product)
-        {
-            if (product is null)
-                throw new ArgumentNullException(nameof(product));
-
-            if (!_productsByName.TryGetValue(product.Name, out var existing) || !ReferenceEquals(existing, product))
-                return;
-
-            product.Delete();
-        }
 
         public void Delete()
         {
@@ -125,7 +107,10 @@ namespace WebStore.Models
             }
 
             _productsByName[product.Name] = product;
-            product.SetSellerInternal(this);
+            if (!ReferenceEquals(product.Seller, this))
+            {
+                product.AddSeller(this);
+            }
         }
 
         private void UnlinkProduct(Product product)
@@ -137,7 +122,7 @@ namespace WebStore.Models
                 return;
 
             _productsByName.Remove(product.Name);
-            product.RemoveSellerInternal(this);
+            product.Delete();
         }
     }
 }

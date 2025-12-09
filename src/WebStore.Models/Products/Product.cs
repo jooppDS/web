@@ -117,39 +117,17 @@ namespace WebStore.Models
             private set => LinkSeller(value ?? throw new ArgumentNullException(nameof(Seller), "Seller cannot be null"));
         }
 
-        internal void SetSellerInternal(Seller newSeller) => LinkSeller(newSeller);
-
-        internal void RemoveSellerInternal(Seller seller) => UnlinkSeller(seller);
         
         public IReadOnlyCollection<ProductInOrder> ProductsInOrder => _productsInOrder.AsReadOnly();
 
-        internal void AddProductInOrderInternal(ProductInOrder productInOrder) => LinkProductInOrder(productInOrder);
-
-        internal void RemoveProductInOrderInternal(ProductInOrder productInOrder) => UnlinkProductInOrder(productInOrder);
-
         public IReadOnlyCollection<Discount> Discounts => _discounts.AsReadOnly();
 
-        internal void AddDiscountInternal(Discount discount) => LinkDiscount(discount);
-
-        internal void RemoveDiscountInternal(Discount discount) => UnlinkDiscount(discount);
-
-        internal ProductInOrder AddProductToOrder(Order order, int quantity)
+        public ProductInOrder AddProductToOrder(Order order, int quantity)
         {
             if (order is null)
-                throw new ArgumentNullException(nameof(order), "Order cannot be null");
-            
-            return new ProductInOrder(this, order, quantity);
-        }
-        
-        internal void RemoveProductInOrder(ProductInOrder productInOrder)
-        {
-            if (productInOrder is null)
-                throw new ArgumentNullException(nameof(productInOrder));
+                throw new ArgumentNullException(nameof(order));
 
-            if (!_productsInOrder.Contains(productInOrder))
-                throw new InvalidOperationException("Given product line is not part of this order.");
-
-            productInOrder.Delete();
+            return order.AddProduct(this, quantity);
         }
 
         public static List<Product> GetAll()
@@ -167,7 +145,7 @@ namespace WebStore.Models
 
             if (_seller != null)
             {
-                RemoveSellerInternal(_seller);
+                RemoveSeller(_seller);
             }
 
             foreach (var discount in _discounts.ToList())
@@ -213,6 +191,11 @@ namespace WebStore.Models
             _extent.Add(this);
         }
 
+
+        public void AddSeller(Seller seller) => LinkSeller(seller);
+
+        public void RemoveSeller(Seller seller) => UnlinkSeller(seller);
+
         private void LinkSeller(Seller newSeller)
         {
             if (newSeller is null)
@@ -224,11 +207,11 @@ namespace WebStore.Models
             var oldSeller = _seller;
             _seller = newSeller;
 
-            newSeller.AddProductInternal(this);
+            newSeller.AddProduct(this);
 
             if (oldSeller != null && !ReferenceEquals(oldSeller, newSeller))
             {
-                oldSeller.RemoveProductInternal(this);
+                oldSeller.RemoveProduct(this);
             }
         }
 
@@ -241,7 +224,21 @@ namespace WebStore.Models
                 return;
 
             _seller = null!;
-            seller.RemoveProductInternal(this);
+            seller.RemoveProduct(this);
+        }
+
+        public void AddProductInOrder(ProductInOrder productInOrder) => LinkProductInOrder(productInOrder);
+
+        public void RemoveProductInOrder(ProductInOrder productInOrder)
+        {
+            if (productInOrder is null)
+                throw new ArgumentNullException(nameof(productInOrder));
+
+            if (!_productsInOrder.Contains(productInOrder))
+                throw new InvalidOperationException("Given product line is not part of this product.");
+
+            _productsInOrder.Remove(productInOrder);
+            productInOrder.Delete(true);
         }
 
         private void LinkProductInOrder(ProductInOrder productInOrder)
@@ -253,7 +250,10 @@ namespace WebStore.Models
                 return;
 
             _productsInOrder.Add(productInOrder);
-            productInOrder.SetProductInternal(this);
+            if (!ReferenceEquals(productInOrder.Product, this))
+            {
+                productInOrder.AddProduct(this);
+            }
         }
 
         private void UnlinkProductInOrder(ProductInOrder productInOrder)
@@ -264,8 +264,16 @@ namespace WebStore.Models
             if (!_productsInOrder.Remove(productInOrder))
                 return;
 
-            productInOrder.ClearProductInternal(this);
+            if (ReferenceEquals(productInOrder.Product, this))
+            {
+                productInOrder.RemoveProduct(this);
+            }
         }
+
+
+        public void AddDiscount(Discount discount) => LinkDiscount(discount);
+
+        public void RemoveDiscount(Discount discount) => UnlinkDiscount(discount);
 
         private void LinkDiscount(Discount discount)
         {
@@ -276,7 +284,7 @@ namespace WebStore.Models
                 return;
 
             _discounts.Add(discount);
-            discount.AddProductInternal(this);
+            discount.AddProduct(this);
         }
 
         private void UnlinkDiscount(Discount discount)
@@ -287,7 +295,7 @@ namespace WebStore.Models
             if (!_discounts.Remove(discount))
                 return;
 
-            discount.RemoveProductInternal(this);
+            discount.RemoveProduct(this);
         }
     }
 }

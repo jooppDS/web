@@ -49,26 +49,27 @@ namespace WebStore.Models
             return new List<Customer>(_extent);
         }
 
-        internal void AddOrderInternal(Order order) => LinkOrder(order);
+        public void AddOrder(Order order) => LinkOrder(order);
 
-        internal void RemoveOrderInternal(Order order) => UnlinkOrder(order);
-
-        internal void AddOrder(Order order)
-        {
-            if (order is null)
-                throw new ArgumentNullException(nameof(order));
-
-            order.SetCustomerInternal(this);
-        }
-
-        internal void RemoveOrder(Order order)
+        public void RemoveOrder(Order order, bool suppressException = false)
         {
             if (order is null)
                 throw new ArgumentNullException(nameof(order));
 
             if (!_orders.Contains(order))
+            {
+                if (suppressException)
+                    return;
                 throw new InvalidOperationException("Order is not associated with this customer.");
+            }
 
+            if (suppressException)
+            {
+                UnlinkOrder(order);
+                return;
+            }
+
+            // Public removal is not allowed; orders must always have a customer.
             throw new InvalidOperationException("Cannot remove customer from order because an order must always have an associated customer.");
         }
     
@@ -111,7 +112,10 @@ namespace WebStore.Models
                 return;
 
             _orders.Add(order);
-            order.SetCustomerInternal(this);
+            if (!ReferenceEquals(order.Customer, this))
+            {
+                order.AddCustomer(this);
+            }
         }
 
         private void UnlinkOrder(Order order)
@@ -122,7 +126,10 @@ namespace WebStore.Models
             if (!_orders.Remove(order))
                 return;
 
-            order.RemoveCustomerInternal(this);
+            if (ReferenceEquals(order.Customer, this))
+            {
+                order.RemoveCustomer(this);
+            }
         }
     }
 }

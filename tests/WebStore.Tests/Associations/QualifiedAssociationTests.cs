@@ -58,12 +58,12 @@ public class QualifiedAssociationTests
     }
 
     [Test]
-    public void SetSellerInternal_NullSeller_ShouldThrowInvalidOperationException()
+    public void AddSeller_NullSeller_ShouldThrowArgumentNullException()
     {
         var product1 = 
             new New("product1", "description", 10, false, 10, 10, new TimeSpan(1), new Seller());
         
-        Assert.Throws<ArgumentNullException>(() => product1.SetSellerInternal(null!));
+        Assert.Throws<ArgumentNullException>(() => product1.AddSeller(null!));
     }
 
     [Test]
