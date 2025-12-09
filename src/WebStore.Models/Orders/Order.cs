@@ -80,9 +80,21 @@ namespace WebStore.Models
 
         public IReadOnlyCollection<ProductInOrder> ProductsInOrder => _productsInOrder.AsReadOnly();
 
-        public void ChangeCustomer(Customer customer)
+        internal void ChangeCustomerInternal(Customer customer)
         {
             Customer = customer;
+        }
+        
+        public void ChangeCustomer(Customer customer)
+        {
+            if (customer is null)
+                throw new ArgumentNullException(nameof(customer));
+            
+            if (_customer == customer)
+                return;
+            
+            ChangeCustomerInternal(customer);
+            customer.AddOrderInternal(this);
         }
 
         public void ChangeVisibility(bool isHidden)

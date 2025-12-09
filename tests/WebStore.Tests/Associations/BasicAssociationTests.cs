@@ -56,16 +56,6 @@ public class BasicAssociationTests
     }
 
     [Test]
-    public void AddExistingAssociation_Throws()
-    {
-        var customer = new Customer("Viktor", "Korneplod", "88005553535", new DateTime(1945, 1, 1));
-        var order = new Order(new DateTime(1, 1, 1), OrderStatus.Pending, DeliveryType.Delivery, customer);
-
-        Assert.Throws<InvalidOperationException>(() => customer.AddOrder(order));
-        
-    }
-
-    [Test]
     public void RemoveOrderFromCustomer_Throws()
     {
         var customer = new Customer("Viktor", "Korneplod", "88005553535", new DateTime(1945, 1, 1));

@@ -67,9 +67,10 @@ namespace WebStore.Models
             if (order is null)
                 throw new ArgumentNullException(nameof(order));
 
-            if (order.Customer == this)
-                throw new InvalidOperationException("Order is already associated with this customer.");
+            if (_orders.Contains(order))
+                return;
 
+            AddOrderInternal(order);
             order.ChangeCustomer(this);
         }
 
