@@ -94,7 +94,7 @@ namespace WebStore.Models
                 return;
             
             ChangeCustomerInternal(customer);
-            customer.AddOrderInternal(this);
+            customer.AddOrder(this);
         }
 
         public void ChangeVisibility(bool isHidden)
@@ -172,7 +172,7 @@ namespace WebStore.Models
             Date = date;
             Status = status;
             DeliveryType = deliveryType;
-            Customer = customer ?? throw new ArgumentNullException(nameof(customer));
+            ChangeCustomer(customer);
             IsHidden = isHidden;
             _extent.Add(this);
         }

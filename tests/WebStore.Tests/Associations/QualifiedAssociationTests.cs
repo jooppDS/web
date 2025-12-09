@@ -48,15 +48,6 @@ public class QualifiedAssociationTests
     }
     
     [Test]
-    public void AddProduct_SameSeller_ShouldThrowInvalidOperationException()
-    {
-        var seller = new Seller("SellerName", new Address());
-        var product1 = new New("product1", "description", 10, false, 10, 10, new TimeSpan(1), seller);
-
-        Assert.Throws<InvalidOperationException>(() => seller.AddProduct(product1));
-    }
-
-    [Test]
     public void ChangeSeller_NullSeller_ShouldThrowInvalidOperationException()
     {
         var product1 = 

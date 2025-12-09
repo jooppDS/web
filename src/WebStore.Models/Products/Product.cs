@@ -137,9 +137,21 @@ namespace WebStore.Models
             }
         }
 
-        public void ChangeSeller(Seller newSeller)
+        internal void ChangeSellerInternal(Seller newSeller)
         {
             Seller = newSeller;
+        }
+
+        public void ChangeSeller(Seller newSeller)
+        {
+            if (newSeller is null)
+                throw new ArgumentNullException(nameof(newSeller));
+
+            if (_seller == newSeller)
+                return;
+            
+            ChangeSellerInternal(newSeller);
+            newSeller.AddProductInternal(this);
         }
         
         public IReadOnlyCollection<ProductInOrder> ProductsInOrder => _productsInOrder.AsReadOnly();

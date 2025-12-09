@@ -2,9 +2,6 @@
 using System.Reflection;
 using WebStore.Models;
 
-var product1 = new New("product1", "description", 10, false, 10, 10, new TimeSpan(1), new Seller());
-var product2 = new New("product1", "description", 10, false, 10, 10, new TimeSpan(1), new Seller());
-
 var path = "../../../Data";
 
 Console.WriteLine("1. Creating objects.");

@@ -68,12 +68,6 @@ namespace WebStore.Models
 
         internal void AddProductInternal(Product product)
         {
-            if (product is null)
-                throw new ArgumentNullException(nameof(product));
-
-            if (_productsByName.TryGetValue(product.Name, out var existing) && !ReferenceEquals(existing, product))
-                throw new InvalidOperationException("A different product with the same name is already associated with this seller.");
-
             _productsByName[product.Name] = product;
         }
 
@@ -90,9 +84,10 @@ namespace WebStore.Models
             if (product is null)
                 throw new ArgumentNullException(nameof(product));
 
-            if (product.Seller == this)
-                throw new InvalidOperationException("Product is already associated with this seller.");
+            if (_productsByName.ContainsKey(product.Name))
+                return;
 
+            AddProductInternal(product);
             product.ChangeSeller(this);
         }
 
