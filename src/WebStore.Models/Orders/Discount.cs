@@ -11,7 +11,6 @@ namespace WebStore.Models
         private string _description = string.Empty;
         private DateTime _startDate;
         private DateTime _endDate;
-        private readonly List<Product> _products = new();
 
         [Required(ErrorMessage = "Total percentage is required")]
         [Range(0, 100, ErrorMessage = "Total percentage must be between 0 and 100")]
@@ -67,12 +66,6 @@ namespace WebStore.Models
             return new List<Discount>(_extent);
         }
 
-        public IReadOnlyCollection<Product> Products => _products.AsReadOnly();
-
-        internal void AddProductInternal(Product product) => LinkProduct(product);
-
-        internal void RemoveProductInternal(Product product) => UnlinkProduct(product);
-
         public static void SaveToXml(string? directory = null)
         {
             XmlPersistenceService.SaveToXml(_extent, "Discounts", directory);
@@ -103,33 +96,6 @@ namespace WebStore.Models
             StartDate = startDate;
             EndDate = endDate;
             _extent.Add(this);
-        }
-
-        private void LinkProduct(Product product)
-        {
-            if (product is null)
-                throw new ArgumentNullException(nameof(product));
-
-            if (_products.Contains(product))
-                return;
-
-            _products.Add(product);
-            product.AddDiscountInternal(this);
-        }
-
-        private void UnlinkProduct(Product product)
-        {
-            if (product is null)
-                throw new ArgumentNullException(nameof(product));
-
-            if (!_products.Contains(product))
-                return;
-
-            if (_products.Count == 1)
-                throw new InvalidOperationException("Discount must be associated with at least one product.");
-
-            _products.Remove(product);
-            product.RemoveDiscountInternal(this);
         }
     }
 }

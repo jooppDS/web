@@ -12,7 +12,6 @@ namespace WebStore.Models
         private ClothingSize _size;
         private Gender _gender;
         private string _careInstruction = string.Empty;
-        private readonly List<Clothing> _relatedClothing = new();
 
         [Required(ErrorMessage = "Materials are required")]
         [MinLength(1, ErrorMessage = "At least one material is required")]
@@ -68,12 +67,6 @@ namespace WebStore.Models
             }
         }
 
-        public IReadOnlyCollection<Clothing> RelatedClothing => _relatedClothing.AsReadOnly();
-
-        internal void AddRelatedClothingInternal(Clothing other) => LinkRelatedClothing(other);
-
-        internal void RemoveRelatedClothingInternal(Clothing other) => UnlinkRelatedClothing(other);
-
         public static List<Clothing> GetAll()
         {
             return new List<Clothing>(_extent);
@@ -112,32 +105,6 @@ namespace WebStore.Models
             Gender = gender;
             CareInstruction = careInstruction;
             _extent.Add(this);
-        }
-
-        private void LinkRelatedClothing(Clothing other)
-        {
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
-
-            if (ReferenceEquals(this, other))
-                return;
-
-            if (_relatedClothing.Contains(other))
-                return;
-
-            _relatedClothing.Add(other);
-            other.AddRelatedClothingInternal(this);
-        }
-
-        private void UnlinkRelatedClothing(Clothing other)
-        {
-            if (other is null)
-                throw new ArgumentNullException(nameof(other));
-
-            if (!_relatedClothing.Remove(other))
-                return;
-
-            other.RemoveRelatedClothingInternal(this);
         }
     }
 }

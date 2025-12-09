@@ -28,23 +28,49 @@ namespace WebStore.Models
         public Product Product
         {
             get => _product;
-            private set => LinkProduct(value ?? throw new ArgumentNullException(nameof(Product), "Product cannot be null"));
+            private set
+            {
+                if (value is null)
+                    throw new ArgumentNullException(nameof(Product), "Product cannot be null");
+
+                if (ReferenceEquals(_product, value))
+                    return;
+
+                var oldProduct = _product;
+                _product = value;
+
+                if (oldProduct != null)
+                {
+                    oldProduct.RemoveProductInOrderInternal(this);
+                }
+
+                value.AddProductInOrderInternal(this);
+            }
         }
 
         [Required(ErrorMessage = "Order is required")]
         public Order Order
         {
             get => _order;
-            private set => LinkOrder(value ?? throw new ArgumentNullException(nameof(Order), "Order cannot be null"));
+            private set
+            {
+                if (value is null)
+                    throw new ArgumentNullException(nameof(Order), "Order cannot be null");
+
+                if (ReferenceEquals(_order, value))
+                    return;
+
+                var oldOrder = _order;
+                _order = value;
+
+                if (oldOrder != null)
+                {
+                    oldOrder.RemoveProductInOrderInternal(this);
+                }
+
+                value.AddProductInOrderInternal(this);
+            }
         }
-
-        internal void SetProductInternal(Product product) => LinkProduct(product);
-
-        internal void ClearProductInternal(Product product) => UnlinkProduct(product);
-
-        internal void SetOrderInternal(Order order) => LinkOrder(order);
-
-        internal void ClearOrderInternal(Order order) => UnlinkOrder(order);
 
         public static IReadOnlyCollection<ProductInOrder> GetAll()
         {
@@ -76,8 +102,8 @@ namespace WebStore.Models
 
         public ProductInOrder(Product product, Order order, int quantity)
         {
-            LinkProduct(product ?? throw new ArgumentNullException(nameof(product)));
-            LinkOrder(order ?? throw new ArgumentNullException(nameof(order)));
+            Product = product ?? throw new ArgumentNullException(nameof(product));
+            Order = order ?? throw new ArgumentNullException(nameof(order));
             Quantity = quantity;
             _extent.Add(this);
         }
@@ -87,92 +113,29 @@ namespace WebStore.Models
             Quantity = quantity;
         }
 
+        public void ChangeProduct(Product product)
+        {
+            Product = product;
+        }
+
+        public void ChangeOrder(Order order)
+        {
+            Order = order;
+        }
+
         public void Delete(bool forceDelete = false)
         {
             if (forceDelete == false && OrderItemsCountForOrderIsOne())
                 throw new InvalidOperationException("Cannot remove the last product from an order. An order must contain at least one product.");
 
             _extent.Remove(this);
-
-            var product = _product;
-            var order = _order;
-
-            if (product != null)
-            {
-                UnlinkProduct(product);
-            }
-
-            if (order != null)
-            {
-                UnlinkOrder(order);
-            }
+            _product.RemoveProductInOrderInternal(this);
+            _order.RemoveProductInOrderInternal(this);
         }
         
         private bool OrderItemsCountForOrderIsOne()
         {
             return Order.GetProductInOrdersInternalCount() == 1;
-        }
-
-        private void LinkProduct(Product product)
-        {
-            if (product is null)
-                throw new ArgumentNullException(nameof(product));
-
-            if (ReferenceEquals(_product, product))
-                return;
-
-            var oldProduct = _product;
-            _product = product;
-
-            product.AddProductInOrderInternal(this);
-
-            if (oldProduct != null && !ReferenceEquals(oldProduct, product))
-            {
-                oldProduct.RemoveProductInOrderInternal(this);
-            }
-        }
-
-        private void UnlinkProduct(Product product)
-        {
-            if (product is null)
-                throw new ArgumentNullException(nameof(product));
-
-            if (!ReferenceEquals(_product, product))
-                return;
-
-            _product = null!;
-            product.RemoveProductInOrderInternal(this);
-        }
-
-        private void LinkOrder(Order order)
-        {
-            if (order is null)
-                throw new ArgumentNullException(nameof(order));
-
-            if (ReferenceEquals(_order, order))
-                return;
-
-            var oldOrder = _order;
-            _order = order;
-
-            order.AddProductInOrderInternal(this);
-
-            if (oldOrder != null && !ReferenceEquals(oldOrder, order))
-            {
-                oldOrder.RemoveProductInOrderInternal(this);
-            }
-        }
-
-        private void UnlinkOrder(Order order)
-        {
-            if (order is null)
-                throw new ArgumentNullException(nameof(order));
-
-            if (!ReferenceEquals(_order, order))
-                return;
-
-            _order = null!;
-            order.RemoveProductInOrderInternal(this);
         }
     }
 }

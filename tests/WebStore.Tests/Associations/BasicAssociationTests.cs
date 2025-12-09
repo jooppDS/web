@@ -47,7 +47,7 @@ public class BasicAssociationTests
         
         var order = new Order(new DateTime(1, 1, 1), OrderStatus.Pending, DeliveryType.Delivery, c1);
         
-        order.SetCustomerInternal(c2);
+        c2.AddOrder(order);
 
         Assert.True(c2.Orders.Contains(order));
         Assert.False(c1.Orders.Contains(order));
@@ -56,14 +56,13 @@ public class BasicAssociationTests
     }
 
     [Test]
-    public void AddExistingAssociation_IsIdempotent()
+    public void AddExistingAssociation_Throws()
     {
         var customer = new Customer("Viktor", "Korneplod", "88005553535", new DateTime(1945, 1, 1));
         var order = new Order(new DateTime(1, 1, 1), OrderStatus.Pending, DeliveryType.Delivery, customer);
 
-        Assert.DoesNotThrow(() => order.SetCustomerInternal(customer));
-        Assert.That(customer.Orders.Count, Is.EqualTo(1));
-        Assert.That(order.Customer, Is.EqualTo(customer));
+        Assert.Throws<InvalidOperationException>(() => customer.AddOrder(order));
+        
     }
 
     [Test]
