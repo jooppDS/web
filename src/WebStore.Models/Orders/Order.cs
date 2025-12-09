@@ -58,57 +58,35 @@ namespace WebStore.Models
         public Customer Customer
         {
             get => _customer;
-            private set
-            {
-                if (value is null)
-                    throw new ArgumentNullException(nameof(Customer), "Customer cannot be null");
-
-                if (ReferenceEquals(_customer, value))
-                    return;
-
-                var oldCustomer = _customer;
-                _customer = value;
-
-                if (oldCustomer != null)
-                {
-                    oldCustomer.RemoveOrderInternal(this);
-                }
-
-                value.AddOrderInternal(this);
-            }
+            private set => LinkCustomer(value ?? throw new ArgumentNullException(nameof(Customer), "Customer cannot be null"));
         }
 
-        public IReadOnlyCollection<ProductInOrder> ProductsInOrder => _productsInOrder.AsReadOnly();
-
-        public void ChangeCustomer(Customer customer)
+        internal void ChangeCustomer(Customer customer)
         {
             Customer = customer;
         }
+
+        internal void SetCustomerInternal(Customer customer) => LinkCustomer(customer);
+
+        internal void RemoveCustomerInternal(Customer customer) => UnlinkCustomer(customer);
+
+        public IReadOnlyCollection<ProductInOrder> ProductsInOrder => _productsInOrder.AsReadOnly();
 
         public void ChangeVisibility(bool isHidden)
         {
             IsHidden = isHidden;
         }
 
-        internal void AddProductInOrderInternal(ProductInOrder productInOrder)
-        {
-            if (!_productsInOrder.Contains(productInOrder))
-            {
-                _productsInOrder.Add(productInOrder);
-            }
-        }
+        internal void AddProductInOrderInternal(ProductInOrder productInOrder) => LinkProductInOrder(productInOrder);
 
-        internal void RemoveProductInOrderInternal(ProductInOrder productInOrder)
-        {
-            _productsInOrder.Remove(productInOrder);
-        }
+        internal void RemoveProductInOrderInternal(ProductInOrder productInOrder) => UnlinkProductInOrder(productInOrder);
 
         internal int GetProductInOrdersInternalCount()
         {
             return _productsInOrder.Count;
         }
 
-        public ProductInOrder AddProduct(Product product, int quantity)
+        internal ProductInOrder AddProduct(Product product, int quantity)
         {
             if (product is null)
                 throw new ArgumentNullException(nameof(product));
@@ -116,7 +94,7 @@ namespace WebStore.Models
             return new ProductInOrder(product, this, quantity);
         }
 
-        public void RemoveProductInOrder(ProductInOrder productInOrder)
+        internal void RemoveProductInOrder(ProductInOrder productInOrder)
         {
             if (productInOrder is null)
                 throw new ArgumentNullException(nameof(productInOrder));
@@ -172,8 +150,66 @@ namespace WebStore.Models
                 productInOrder.Delete(true);
             }
 
-            _customer.RemoveOrderInternal(this);
+            if (_customer != null)
+            {
+                RemoveCustomerInternal(_customer);
+            }
+
             _extent.Remove(this);
+        }
+
+        private void LinkCustomer(Customer customer)
+        {
+            if (customer is null)
+                throw new ArgumentNullException(nameof(customer));
+
+            if (ReferenceEquals(_customer, customer))
+                return;
+
+            var oldCustomer = _customer;
+            _customer = customer;
+
+            customer.AddOrderInternal(this);
+
+            if (oldCustomer != null && !ReferenceEquals(oldCustomer, customer))
+            {
+                oldCustomer.RemoveOrderInternal(this);
+            }
+        }
+
+        private void UnlinkCustomer(Customer customer)
+        {
+            if (customer is null)
+                throw new ArgumentNullException(nameof(customer));
+
+            if (!ReferenceEquals(_customer, customer))
+                return;
+
+            _customer = null!;
+            customer.RemoveOrderInternal(this);
+        }
+
+        private void LinkProductInOrder(ProductInOrder productInOrder)
+        {
+            if (productInOrder is null)
+                throw new ArgumentNullException(nameof(productInOrder));
+
+            if (_productsInOrder.Contains(productInOrder))
+                return;
+
+            _productsInOrder.Add(productInOrder);
+            productInOrder.SetOrderInternal(this);
+        }
+
+        private void UnlinkProductInOrder(ProductInOrder productInOrder)
+        {
+            if (productInOrder is null)
+                throw new ArgumentNullException(nameof(productInOrder));
+
+            if (!_productsInOrder.Remove(productInOrder))
+                return;
+
+            productInOrder.ClearOrderInternal(this);
         }
     }
 }

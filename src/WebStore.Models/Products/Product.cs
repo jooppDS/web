@@ -17,6 +17,7 @@ namespace WebStore.Models
         private int _stockQuantity;
         private Seller _seller = null!;
         private readonly List<ProductInOrder> _productsInOrder = new();
+        private readonly List<Discount> _discounts = new();
 
         [Required(ErrorMessage = "Name is required")]
         [StringLength(100, MinimumLength = 2, ErrorMessage = "Name must be between 2 and 100 characters")]
@@ -29,10 +30,6 @@ namespace WebStore.Models
                     throw new ArgumentException("Name cannot be null or empty", nameof(Name));
                 if (value.Length < 2 || value.Length > 100)
                     throw new ArgumentException("Name must be between 2 and 100 characters", nameof(Name));
-                bool nameExists = _extent.Any(p => p != this && 
-                                                   string.Equals(p.Name, value, StringComparison.OrdinalIgnoreCase));
-                if (nameExists)
-                    throw new InvalidOperationException("A product with this name already exists.");
                 _name = value;
             }
         }
@@ -117,47 +114,26 @@ namespace WebStore.Models
         public Seller Seller
         {
             get => _seller;
-            private set
-            {
-                if (value is null)
-                    throw new ArgumentNullException(nameof(Seller), "Seller cannot be null");
-
-                if (ReferenceEquals(_seller, value))
-                    return;
-
-                var oldSeller = _seller;
-                _seller = value;
-
-                if (oldSeller != null)
-                {
-                    oldSeller.RemoveProductInternal(this);
-                }
-
-                value.AddProductInternal(this);
-            }
+            private set => LinkSeller(value ?? throw new ArgumentNullException(nameof(Seller), "Seller cannot be null"));
         }
 
-        public void ChangeSeller(Seller newSeller)
-        {
-            Seller = newSeller;
-        }
+        internal void SetSellerInternal(Seller newSeller) => LinkSeller(newSeller);
+
+        internal void RemoveSellerInternal(Seller seller) => UnlinkSeller(seller);
         
         public IReadOnlyCollection<ProductInOrder> ProductsInOrder => _productsInOrder.AsReadOnly();
 
-        internal void AddProductInOrderInternal(ProductInOrder productInOrder)
-        {
-            if (!_productsInOrder.Contains(productInOrder))
-            {
-                _productsInOrder.Add(productInOrder);
-            }
-        }
+        internal void AddProductInOrderInternal(ProductInOrder productInOrder) => LinkProductInOrder(productInOrder);
 
-        internal void RemoveProductInOrderInternal(ProductInOrder productInOrder)
-        {
-            _productsInOrder.Remove(productInOrder);
-        }
+        internal void RemoveProductInOrderInternal(ProductInOrder productInOrder) => UnlinkProductInOrder(productInOrder);
 
-        public ProductInOrder AddProductToOrder(Order order, int quantity)
+        public IReadOnlyCollection<Discount> Discounts => _discounts.AsReadOnly();
+
+        internal void AddDiscountInternal(Discount discount) => LinkDiscount(discount);
+
+        internal void RemoveDiscountInternal(Discount discount) => UnlinkDiscount(discount);
+
+        internal ProductInOrder AddProductToOrder(Order order, int quantity)
         {
             if (order is null)
                 throw new ArgumentNullException(nameof(order), "Order cannot be null");
@@ -165,7 +141,7 @@ namespace WebStore.Models
             return new ProductInOrder(this, order, quantity);
         }
         
-        public void RemoveProductInOrder(ProductInOrder productInOrder)
+        internal void RemoveProductInOrder(ProductInOrder productInOrder)
         {
             if (productInOrder is null)
                 throw new ArgumentNullException(nameof(productInOrder));
@@ -189,7 +165,16 @@ namespace WebStore.Models
                 productInOrder.Delete();
             }
 
-            _seller.RemoveProductInternal(this);
+            if (_seller != null)
+            {
+                RemoveSellerInternal(_seller);
+            }
+
+            foreach (var discount in _discounts.ToList())
+            {
+                UnlinkDiscount(discount);
+            }
+
             _extent.Remove(this);
         }
 
@@ -224,8 +209,85 @@ namespace WebStore.Models
             IsAdultProduct = isAdultProduct;
             Weight = weight;
             StockQuantity = stockQuantity;
-            Seller = seller ?? throw new ArgumentNullException(nameof(seller));
+            LinkSeller(seller ?? throw new ArgumentNullException(nameof(seller)));
             _extent.Add(this);
+        }
+
+        private void LinkSeller(Seller newSeller)
+        {
+            if (newSeller is null)
+                throw new ArgumentNullException(nameof(newSeller));
+
+            if (ReferenceEquals(_seller, newSeller))
+                return;
+
+            var oldSeller = _seller;
+            _seller = newSeller;
+
+            newSeller.AddProductInternal(this);
+
+            if (oldSeller != null && !ReferenceEquals(oldSeller, newSeller))
+            {
+                oldSeller.RemoveProductInternal(this);
+            }
+        }
+
+        private void UnlinkSeller(Seller seller)
+        {
+            if (seller is null)
+                throw new ArgumentNullException(nameof(seller));
+
+            if (!ReferenceEquals(_seller, seller))
+                return;
+
+            _seller = null!;
+            seller.RemoveProductInternal(this);
+        }
+
+        private void LinkProductInOrder(ProductInOrder productInOrder)
+        {
+            if (productInOrder is null)
+                throw new ArgumentNullException(nameof(productInOrder));
+
+            if (_productsInOrder.Contains(productInOrder))
+                return;
+
+            _productsInOrder.Add(productInOrder);
+            productInOrder.SetProductInternal(this);
+        }
+
+        private void UnlinkProductInOrder(ProductInOrder productInOrder)
+        {
+            if (productInOrder is null)
+                throw new ArgumentNullException(nameof(productInOrder));
+
+            if (!_productsInOrder.Remove(productInOrder))
+                return;
+
+            productInOrder.ClearProductInternal(this);
+        }
+
+        private void LinkDiscount(Discount discount)
+        {
+            if (discount is null)
+                throw new ArgumentNullException(nameof(discount));
+
+            if (_discounts.Contains(discount))
+                return;
+
+            _discounts.Add(discount);
+            discount.AddProductInternal(this);
+        }
+
+        private void UnlinkDiscount(Discount discount)
+        {
+            if (discount is null)
+                throw new ArgumentNullException(nameof(discount));
+
+            if (!_discounts.Remove(discount))
+                return;
+
+            discount.RemoveProductInternal(this);
         }
     }
 }

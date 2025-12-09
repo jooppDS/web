@@ -48,21 +48,22 @@ public class QualifiedAssociationTests
     }
     
     [Test]
-    public void AddProduct_SameSeller_ShouldThrowInvalidOperationException()
+    public void AddProduct_SameSeller_IsIdempotent()
     {
         var seller = new Seller("SellerName", new Address());
         var product1 = new New("product1", "description", 10, false, 10, 10, new TimeSpan(1), seller);
 
-        Assert.Throws<InvalidOperationException>(() => seller.AddProduct(product1));
+        Assert.DoesNotThrow(() => seller.AddProduct(product1));
+        Assert.That(seller.Products.Count, Is.EqualTo(1));
     }
 
     [Test]
-    public void ChangeSeller_NullSeller_ShouldThrowInvalidOperationException()
+    public void SetSellerInternal_NullSeller_ShouldThrowInvalidOperationException()
     {
         var product1 = 
             new New("product1", "description", 10, false, 10, 10, new TimeSpan(1), new Seller());
         
-        Assert.Throws<ArgumentNullException>(() => product1.ChangeSeller(null!));
+        Assert.Throws<ArgumentNullException>(() => product1.SetSellerInternal(null!));
     }
 
     [Test]

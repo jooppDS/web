@@ -49,31 +49,19 @@ namespace WebStore.Models
             return new List<Customer>(_extent);
         }
 
-        internal void AddOrderInternal(Order order)
-        {
-            if (!_orders.Contains(order))
-            {
-                _orders.Add(order);
-            }
-        }
+        internal void AddOrderInternal(Order order) => LinkOrder(order);
 
-        internal void RemoveOrderInternal(Order order)
-        {
-            _orders.Remove(order);
-        }
+        internal void RemoveOrderInternal(Order order) => UnlinkOrder(order);
 
-        public void AddOrder(Order order)
+        internal void AddOrder(Order order)
         {
             if (order is null)
                 throw new ArgumentNullException(nameof(order));
 
-            if (order.Customer == this)
-                throw new InvalidOperationException("Order is already associated with this customer.");
-
-            order.ChangeCustomer(this);
+            order.SetCustomerInternal(this);
         }
 
-        public void RemoveOrder(Order order)
+        internal void RemoveOrder(Order order)
         {
             if (order is null)
                 throw new ArgumentNullException(nameof(order));
@@ -112,6 +100,29 @@ namespace WebStore.Models
         {
             DateOfBirth = dateOfBirth;
             _extent.Add(this);
+        }
+
+        private void LinkOrder(Order order)
+        {
+            if (order is null)
+                throw new ArgumentNullException(nameof(order));
+
+            if (_orders.Contains(order))
+                return;
+
+            _orders.Add(order);
+            order.SetCustomerInternal(this);
+        }
+
+        private void UnlinkOrder(Order order)
+        {
+            if (order is null)
+                throw new ArgumentNullException(nameof(order));
+
+            if (!_orders.Remove(order))
+                return;
+
+            order.RemoveCustomerInternal(this);
         }
     }
 }

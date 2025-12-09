@@ -66,43 +66,25 @@ namespace WebStore.Models
             }
         }
 
-        internal void AddProductInternal(Product product)
+        internal void AddProductInternal(Product product) => LinkProduct(product);
+
+        internal void RemoveProductInternal(Product product) => UnlinkProduct(product);
+
+        internal void AddProduct(Product product)
         {
             if (product is null)
                 throw new ArgumentNullException(nameof(product));
 
-            if (_productsByName.TryGetValue(product.Name, out var existing) && !ReferenceEquals(existing, product))
-                throw new InvalidOperationException("A different product with the same name is already associated with this seller.");
-
-            _productsByName[product.Name] = product;
+            product.SetSellerInternal(this);
         }
 
-        internal void RemoveProductInternal(Product product)
-        {
-            if (product is null)
-                throw new ArgumentNullException(nameof(product));
-
-            _productsByName.Remove(product.Name);
-        }
-
-        public void AddProduct(Product product)
-        {
-            if (product is null)
-                throw new ArgumentNullException(nameof(product));
-
-            if (product.Seller == this)
-                throw new InvalidOperationException("Product is already associated with this seller.");
-
-            product.ChangeSeller(this);
-        }
-
-        public void RemoveProduct(Product product)
+        internal void RemoveProduct(Product product)
         {
             if (product is null)
                 throw new ArgumentNullException(nameof(product));
 
             if (!_productsByName.TryGetValue(product.Name, out var existing) || !ReferenceEquals(existing, product))
-                throw new InvalidOperationException("Product is not associated with this seller.");
+                return;
 
             product.Delete();
         }
@@ -127,6 +109,35 @@ namespace WebStore.Models
             Name = name;
             Address = address;
             _extent.Add(this);
+        }
+
+        private void LinkProduct(Product product)
+        {
+            if (product is null)
+                throw new ArgumentNullException(nameof(product));
+
+            if (_productsByName.TryGetValue(product.Name, out var existing))
+            {
+                if (ReferenceEquals(existing, product))
+                    return;
+
+                throw new InvalidOperationException("A different product with the same name is already associated with this seller.");
+            }
+
+            _productsByName[product.Name] = product;
+            product.SetSellerInternal(this);
+        }
+
+        private void UnlinkProduct(Product product)
+        {
+            if (product is null)
+                throw new ArgumentNullException(nameof(product));
+
+            if (!_productsByName.TryGetValue(product.Name, out var existing) || !ReferenceEquals(existing, product))
+                return;
+
+            _productsByName.Remove(product.Name);
+            product.RemoveSellerInternal(this);
         }
     }
 }
