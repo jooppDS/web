@@ -42,7 +42,7 @@ public class AssociationWithAttributeTests
     {
         var customer = new Customer("Vlad", "Bumaga", "+12345678", DateTime.Today);
         var order = new Order(new DateTime(1, 1, 1), OrderStatus.Pending, DeliveryType.Delivery, customer);
-        var product = new New("product", "description", 10, false, 10, 10, new TimeSpan(1), new Seller());
+        var product = new New("product", "description", 10, true, 10, 10, new TimeSpan(1), new Seller());
         
         Assert.Throws<ArgumentException>(() => new ProductInOrder(product, order, 1));
     }

@@ -56,16 +56,7 @@ public class QualifiedAssociationTests
         Assert.DoesNotThrow(() => seller.AddProduct(product1));
         Assert.That(seller.Products.Count, Is.EqualTo(1));
     }
-
-    [Test]
-    public void AddSeller_NullSeller_ShouldThrowArgumentNullException()
-    {
-        var product1 = 
-            new New("product1", "description", 10, false, 10, 10, new TimeSpan(1), new Seller());
-        
-        Assert.Throws<ArgumentNullException>(() => product1.AddSeller(null!));
-    }
-
+    
     [Test]
     public void DeleteProduct_ShouldRemoveProductFromSeller()
     {

@@ -69,8 +69,7 @@ namespace WebStore.Models
         public void AddProduct(Product product) => LinkProduct(product);
 
         public void RemoveProduct(Product product) => UnlinkProduct(product);
-
-
+        
         public void Delete()
         {
             var products = new List<Product>(Products);

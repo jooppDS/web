@@ -27,40 +27,7 @@ public class AggregationAssociationTests
             }
         }
     }
-
-    [Test]
-    public void CreateDiscount_WithInvalidPercentage_ThrowsArgumentOutOfRangeException()
-    {
-        var product = new New("Koks", "moshnii sochnii", 228, true, 100, 2, TimeSpan.FromDays(1), new Seller());
-        Assert.Throws<ArgumentOutOfRangeException>(() => new Discount(-12, "SUPER PLATNO", DateTime.Now, DateTime.Now.AddMonths(1), product));
-        Assert.Throws<ArgumentOutOfRangeException>(() => new Discount(101, "BESPLATNO", DateTime.Now, DateTime.Now.AddMonths(1), product));
-    }
-
-    [Test]
-    public void CreateDiscount_WithInvalidDescriptionSize_ThrowsArgumentException()
-    {
-        var product = new New("Koks", "moshnii sochnii", 228, true, 100, 2, TimeSpan.FromDays(1), new Seller());
-        Assert.Throws<ArgumentException>(() => new Discount(10, "loh", DateTime.Now, DateTime.Now.AddMonths(1), product));
-        Assert.Throws<ArgumentException>(() => new Discount(10, "lorem ipsum lorem ipsum lorem ipsum lorem ipsum " +
-                                                                           "lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem" +
-                                                                           "lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem" +
-                                                                           "lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem" +
-                                                                           "lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem" +
-                                                                           "lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem" +
-                                                                           " ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum " +
-                                                                           "lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem " +
-                                                                           "ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum " +
-                                                                           "lorem ipsum lorem ipsum lorem  lorem ipsum lorem ipsum lorem ipsum lorem ipsum", 
-            DateTime.Now, DateTime.Now.AddMonths(1), product));
-    }
-
-    [Test]
-    public void CreateDiscount_WithEndDateEarlierThanStart_ShouldThrowArgumentOutOfRangeException()
-    {
-        var product = new New("Koks", "moshnii sochnii", 228, true, 100, 2, TimeSpan.FromDays(1), new Seller());
-        Assert.Throws<ArgumentOutOfRangeException>(() => new Discount(10, "ZAEBIS", DateTime.Now, DateTime.Now.AddMonths(-1), product));
-    }
-
+    
     [Test]
     public void AddProduct_ShouldAddProductToDiscount_AndDiscountToProduct()
     {

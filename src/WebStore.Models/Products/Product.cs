@@ -182,8 +182,7 @@ namespace WebStore.Models
             LinkSeller(seller ?? throw new ArgumentNullException(nameof(seller)));
             _extent.Add(this);
         }
-
-
+        
         public void AddSeller(Seller seller) => LinkSeller(seller);
 
         public void RemoveSeller(Seller seller) => UnlinkSeller(seller);
