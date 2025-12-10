@@ -69,8 +69,20 @@ namespace WebStore.Models
 
         public ProductInOrder(Product product, Order order, int quantity)
         {
-            LinkProduct(product ?? throw new ArgumentNullException(nameof(product)));
-            LinkOrder(order ?? throw new ArgumentNullException(nameof(order)));
+            if (product == null) 
+                throw new ArgumentNullException(nameof(product));
+            if (order == null) 
+                throw new ArgumentNullException(nameof(order));
+            
+            var duplicateExists = _extent.Any(pio =>
+                ReferenceEquals(pio.Product, product) &&
+                ReferenceEquals(pio.Order, order));
+
+            if (duplicateExists)
+                throw new InvalidOperationException($"A ProductInOrder with product '{product}' and order '{order}' already exists.");
+            
+            LinkProduct(product);
+            LinkOrder(order);
             Quantity = quantity;
             _extent.Add(this);
         }
