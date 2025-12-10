@@ -31,6 +31,8 @@ namespace WebStore.Models
                 if (!Enum.IsDefined(typeof(OrderStatus), value))
                     throw new ArgumentOutOfRangeException(nameof(Status), 
                         "Status must be a valid OrderStatus value");
+                if (value == OrderStatus.Cancelled)
+                    Delete();
                 _status = value;
             }
         }
@@ -63,9 +65,9 @@ namespace WebStore.Models
         
         public IReadOnlyCollection<ProductInOrder> ProductsInOrder => _productsInOrder.AsReadOnly();
 
-        public void ChangeVisibility(bool isHidden)
+        public void HideOrder()
         {
-            IsHidden = isHidden;
+            IsHidden = true;
         }
 
         public int GetProductInOrdersCount()
@@ -101,13 +103,13 @@ namespace WebStore.Models
         {
         }
 
-        public Order(DateTime date, OrderStatus status, DeliveryType deliveryType, Customer customer, bool isHidden = false)
+        public Order(DateTime date, OrderStatus status, DeliveryType deliveryType, Customer customer)
         {
             Date = date;
             Status = status;
             DeliveryType = deliveryType;
             Customer = customer ?? throw new ArgumentNullException(nameof(customer));
-            IsHidden = isHidden;
+            IsHidden = false;
             _extent.Add(this);
         }
 
@@ -146,7 +148,7 @@ namespace WebStore.Models
 
             if (oldCustomer != null && !ReferenceEquals(oldCustomer, customer))
             {
-                oldCustomer.RemoveOrder(this, suppressException: true);
+                oldCustomer.RemoveOrder(this, true);
             }
         }
 
@@ -159,7 +161,7 @@ namespace WebStore.Models
                 return;
 
             _customer = null!;
-            customer.RemoveOrder(this, suppressException: true);
+            customer.RemoveOrder(this, true);
         }
         
         public void AddProductInOrder(ProductInOrder productInOrder) => LinkProductInOrder(productInOrder);
