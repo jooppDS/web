@@ -81,19 +81,20 @@ namespace WebStore.Models
             if (duplicateExists)
                 throw new InvalidOperationException($"A ProductInOrder with product '{product}' and order '{order}' already exists.");
             
+            Quantity = quantity;
+
             LinkProduct(product);
             try
             {
                 LinkOrder(order);
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 product.RemoveProductInOrder(this);
+                this.Delete();
                 throw;
             }
-
-
-            Quantity = quantity;
+            
             _extent.Add(this);
         }
 
@@ -102,10 +103,8 @@ namespace WebStore.Models
             Quantity = quantity;
         }
 
-        public void Delete(bool forceDelete = false)
+        public void Delete()
         {
-            _extent.Remove(this);
-
             var product = _product;
             var order = _order;
 
@@ -118,6 +117,8 @@ namespace WebStore.Models
             {
                 UnlinkOrder(order);
             }
+
+            _extent.Remove(this);
         }
 
         private void LinkProduct(Product product)

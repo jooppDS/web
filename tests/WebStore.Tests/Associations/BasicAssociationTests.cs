@@ -36,7 +36,6 @@ public class BasicAssociationTests
         
         Assert.Contains(order, (System.Collections.ICollection)customer.Orders);
         Assert.That(order.Customer, Is.EqualTo(customer));
-        
     }
 
     [Test]
@@ -52,11 +51,10 @@ public class BasicAssociationTests
         Assert.True(c2.Orders.Contains(order));
         Assert.False(c1.Orders.Contains(order));
         Assert.That(order.Customer, Is.EqualTo(c2));
-        
     }
 
     [Test]
-    public void AddExistingAssociation_IsIdempotent()
+    public void AddExistingAssociation_DoesNotAllowDuplicates()
     {
         var customer = new Customer("Viktor", "Korneplod", "88005553535", new DateTime(1945, 1, 1));
         var order = new Order(new DateTime(1, 1, 1), OrderStatus.Pending, DeliveryType.Delivery, customer);
@@ -76,14 +74,14 @@ public class BasicAssociationTests
     }
 
     [Test]
-    public void ChangeCustomer_RemovesFromOld_AddsToNewOrder()
+    public void AddCustomer_RemovesFromOld_AddsToNewOrder()
     {
         var c1 = new Customer("Viktor", "Korneplod", "88005553535", new DateTime(1945, 1, 1));
         var c2 = new Customer("Kai", "Angle", "88005553535", new DateTime(1999, 1, 1));
         
         var order = new Order(new DateTime(1, 1, 1), OrderStatus.Pending, DeliveryType.Delivery, c1);
         
-        order.ChangeCustomer(c2);
+        order.AddCustomer(c2);
         
         Assert.True(c2.Orders.Contains(order));
         Assert.False(c1.Orders.Contains(order));
@@ -101,5 +99,4 @@ public class BasicAssociationTests
         Assert.False(Order.GetAll().Contains(order));
         Assert.False(customer.Orders.Contains(order));
     }
-
 }

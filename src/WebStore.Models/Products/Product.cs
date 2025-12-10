@@ -189,7 +189,7 @@ namespace WebStore.Models
 
         private void LinkSeller(Seller newSeller)
         {
-            if (_seller != null)
+            if (_seller != null && !ReferenceEquals(_seller, newSeller))
                 throw new ArgumentException("Seller cannot be changed");
             
             if (newSeller is null)
@@ -236,7 +236,7 @@ namespace WebStore.Models
                 throw new InvalidOperationException("Given product line is not part of this product.");
 
             _productsInOrder.Remove(productInOrder);
-            productInOrder.Delete(true);
+            productInOrder.Delete();
         }
         
         public void AddDiscount(Discount discount) => LinkDiscount(discount);

@@ -133,7 +133,7 @@ namespace WebStore.Models
                 throw new ArgumentNullException(nameof(other));
 
             if (ReferenceEquals(this, other))
-                return;
+                throw new ArgumentException("Clothing cannot associate with itself", nameof(other));
 
             if (_relatedClothing.Contains(other))
                 return;

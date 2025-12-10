@@ -56,6 +56,7 @@ public class CompositionAssociationTests
 
         seller.RemoveProduct(product1);
         Assert.That(seller.Products.Count, Is.EqualTo(0));
+        Assert.That(Seller.GetAll().Count, Is.EqualTo(1));
         Assert.That(Product.GetAll().Count, Is.EqualTo(0));
     }
     
@@ -70,6 +71,7 @@ public class CompositionAssociationTests
         
         seller.Delete();
         
+        Assert.That(Seller.GetAll().Count, Is.EqualTo(0));
         Assert.That(Product.GetAll().Count, Is.EqualTo(0));
     }
 }

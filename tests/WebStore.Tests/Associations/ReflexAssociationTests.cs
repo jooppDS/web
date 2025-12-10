@@ -85,13 +85,14 @@ public class ReflexAssociationTests
     }
 
     [Test]
-    public void AddRelatedCloting_DoesNotLink_ToItself()
+    public void AddRelatedCloting_LinkingToItself_ShouldThrowArgumentException()
     {
         var clothing1 = new Clothing("Cherevichki", "zayebatyye", 1337, false, 100, 5,
             new List<string> { "Kozha bobra", "stru4ok bobrovy" }, ClothingSize.XXL, Gender.Unisex, "Da poh",
             new Seller());
-        clothing1.AddRelatedClothing(clothing1);
-        Assert.That(clothing1.RelatedClothing.Contains(clothing1), Is.False);
+        
+        Assert.Throws<ArgumentException>(() => clothing1.AddRelatedClothing(clothing1));
+        Assert.That(clothing1.RelatedClothing.Count, Is.EqualTo(0));
     }
 
     [Test]

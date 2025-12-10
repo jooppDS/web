@@ -45,6 +45,8 @@ public class AssociationWithAttributeTests
         var product = new New("product", "description", 10, true, 10, 10, new TimeSpan(1), new Seller());
         
         Assert.Throws<ArgumentException>(() => new ProductInOrder(product, order, 1));
+        Assert.That(ProductInOrder.GetAll().Count, Is.EqualTo(0));
+        Assert.That(product.ProductsInOrder.Count, Is.EqualTo(0));
     }
 
     [Test]

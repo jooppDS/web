@@ -60,14 +60,7 @@ namespace WebStore.Models
             get => _customer;
             private set => LinkCustomer(value ?? throw new ArgumentNullException(nameof(Customer), "Customer cannot be null"));
         }
-
-        public void ChangeCustomer(Customer customer)
-        {
-            Customer = customer;
-        }
-
-
-
+        
         public IReadOnlyCollection<ProductInOrder> ProductsInOrder => _productsInOrder.AsReadOnly();
 
         public void ChangeVisibility(bool isHidden)
@@ -122,7 +115,7 @@ namespace WebStore.Models
         {
             foreach (var productInOrder in _productsInOrder.ToList())
             {
-                productInOrder.Delete(true);
+                productInOrder.Delete();
             }
 
             if (_customer != null)
@@ -196,7 +189,7 @@ namespace WebStore.Models
                 throw new InvalidOperationException("Given product line is not part of this order.");
 
             _productsInOrder.Remove(productInOrder);
-            productInOrder.Delete(true);
+            productInOrder.Delete();
         }
     }
 }

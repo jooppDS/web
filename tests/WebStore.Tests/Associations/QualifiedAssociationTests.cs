@@ -38,6 +38,17 @@ public class QualifiedAssociationTests
         Assert.Throws<InvalidOperationException>(() =>
             new New("product1", "description", 10, false, 10, 10, new TimeSpan(1), seller));
     }
+    
+    [Test]
+    public void ChangingAlreadyAssignedSeller_ThrowsArgumentException()
+    {
+        var seller1 = new Seller("SellerName1", new Address());
+        var seller2 = new Seller("9mice", new Address());
+        var product = new New("product1", "description", 10, false, 10, 10, new TimeSpan(1), seller1);
+        
+        Assert.Throws<ArgumentException>(() => product.AddSeller(seller2));
+        
+    }
 
     [Test]
     public void AddProduct_NullProduct_ShouldThrowInvalidOperationException()
@@ -48,7 +59,7 @@ public class QualifiedAssociationTests
     }
     
     [Test]
-    public void AddProduct_SameSeller_IsIdempotent()
+    public void AddProduct_SameSeller_DoesNotAllowDuplicates()
     {
         var seller = new Seller("SellerName", new Address());
         var product1 = new New("product1", "description", 10, false, 10, 10, new TimeSpan(1), seller);
@@ -65,16 +76,6 @@ public class QualifiedAssociationTests
         
         product1.Delete();
         Assert.That(seller.Products.Count, Is.EqualTo(0));
-    }
-
-    [Test]
-    public void ChangingAlreadyAssignedSeller_ThrowsArgumentException()
-    {
-        var seller1 = new Seller("SellerName1", new Address());
-        var seller2 = new Seller("9mice", new Address());
-        var product = new New("product1", "description", 10, false, 10, 10, new TimeSpan(1), seller1);
-        
-        Assert.Throws<ArgumentException>(() => product.AddSeller(seller2));
-        
+        Assert.That(Product.GetAll().Count, Is.EqualTo(0));
     }
 }

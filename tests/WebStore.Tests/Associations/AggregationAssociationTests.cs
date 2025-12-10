@@ -68,6 +68,10 @@ public class AggregationAssociationTests
         var discount = new Discount(10, "ZAEBIS", DateTime.Now, DateTime.Now.AddMonths(1), product);
         
         Assert.Throws<InvalidOperationException>(() => discount.RemoveProduct(product));
+        Assert.That(discount.Products.Count, Is.EqualTo(1));
+        Assert.That(product.Discounts.Count, Is.EqualTo(1));
+        Assert.That(discount.Products.Contains(product), Is.True);
+        Assert.That(product.Discounts.Contains(discount), Is.True);
     }
 
     [Test]
@@ -95,6 +99,7 @@ public class AggregationAssociationTests
         
         product1.Delete();
         
+        Assert.That(Product.GetAll().Contains(product1), Is.False);
         Assert.That(discount.Products.Contains(product1), Is.False);
         Assert.That(discount.Products.Count, Is.EqualTo(1));
     }
