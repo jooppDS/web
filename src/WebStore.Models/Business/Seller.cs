@@ -8,6 +8,8 @@ namespace WebStore.Models
     {
         private static List<Seller> _extent = new List<Seller>();
 
+        private readonly Dictionary<string, Product> _productsByName = new(StringComparer.OrdinalIgnoreCase);
+
         private string _name = string.Empty;
         private Address _address = null!;
 
@@ -38,6 +40,8 @@ namespace WebStore.Models
             }
         }
 
+        public IReadOnlyCollection<Product> Products => _productsByName.Values.ToList().AsReadOnly();
+        
         public static List<Seller> GetAll()
         {
             return new List<Seller>(_extent);
@@ -62,6 +66,21 @@ namespace WebStore.Models
             }
         }
 
+        public void AddProduct(Product product) => LinkProduct(product);
+
+        public void RemoveProduct(Product product) => UnlinkProduct(product);
+        
+        public void Delete()
+        {
+            var products = new List<Product>(Products);
+            foreach (var product in products)
+            {
+                product.Delete();
+            }
+
+            _extent.Remove(this);
+        }
+
         public Seller()
         {
         }
@@ -71,6 +90,38 @@ namespace WebStore.Models
             Name = name;
             Address = address;
             _extent.Add(this);
+        }
+
+        private void LinkProduct(Product product)
+        {
+            if (product is null)
+                throw new ArgumentNullException(nameof(product));
+
+            if (_productsByName.TryGetValue(product.Name, out var existing))
+            {
+                if (ReferenceEquals(existing, product))
+                    return;
+
+                throw new InvalidOperationException("A different product with the same name is already associated with this seller.");
+            }
+
+            _productsByName[product.Name] = product;
+            if (!ReferenceEquals(product.Seller, this))
+            {
+                product.AddSeller(this);
+            }
+        }
+
+        private void UnlinkProduct(Product product)
+        {
+            if (product is null)
+                throw new ArgumentNullException(nameof(product));
+
+            if (!_productsByName.TryGetValue(product.Name, out var existing) || !ReferenceEquals(existing, product))
+                return;
+
+            _productsByName.Remove(product.Name);
+            product.Delete();
         }
     }
 }

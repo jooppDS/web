@@ -90,8 +90,8 @@ namespace WebStore.Models
         }
 
         public Phone(string name, string description, decimal price, bool isAdultProduct, decimal weight, int stockQuantity, 
-            bool isWaterproof, int storageCapacity, int batteryCapacity, string cpu, decimal storeFeePercentage = 5)
-            : base(name, description, price, isAdultProduct, weight, stockQuantity, storeFeePercentage)
+            bool isWaterproof, int storageCapacity, int batteryCapacity, string cpu, Seller seller)
+            : base(name, description, price, isAdultProduct, weight, stockQuantity, seller)
         {
             IsWaterproof = isWaterproof;
             StorageCapacity = storageCapacity;

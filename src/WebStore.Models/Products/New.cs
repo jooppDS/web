@@ -51,8 +51,8 @@ namespace WebStore.Models
         }
 
         public New(string name, string description, decimal price, bool isAdultProduct, decimal weight, int stockQuantity, 
-            TimeSpan warrantyPeriod, decimal storeFeePercentage = 5)
-            : base(name, description, price, isAdultProduct, weight, stockQuantity, storeFeePercentage)
+            TimeSpan warrantyPeriod, Seller seller)
+            : base(name, description, price, isAdultProduct, weight, stockQuantity, seller)
         {
             WarrantyPeriod = warrantyPeriod;
             _extent.Add(this);

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Xml.Serialization;
 using WebStore.Models.Persistence;
 
 namespace WebStore.Models
@@ -14,6 +15,9 @@ namespace WebStore.Models
         private static decimal _storeFeePercentage = 5;
         private decimal _weight;
         private int _stockQuantity;
+        private Seller _seller = null!;
+        private readonly List<ProductInOrder> _productsInOrder = new();
+        private readonly List<Discount> _discounts = new();
 
         [Required(ErrorMessage = "Name is required")]
         [StringLength(100, MinimumLength = 2, ErrorMessage = "Name must be between 2 and 100 characters")]
@@ -106,10 +110,42 @@ namespace WebStore.Models
             }
         }
 
+        [Required(ErrorMessage = "Seller is required")]
+        public Seller Seller
+        {
+            get => _seller;
+            private set => LinkSeller(value ?? throw new ArgumentNullException(nameof(Seller), "Seller cannot be null"));
+        }
+
+        
+        public IReadOnlyCollection<ProductInOrder> ProductsInOrder => _productsInOrder.AsReadOnly();
+
+        public IReadOnlyCollection<Discount> Discounts => _discounts.AsReadOnly();
 
         public static List<Product> GetAll()
         {
             return new List<Product>(_extent);
+        }
+
+        public void Delete()
+        {
+            var items = new List<ProductInOrder>(_productsInOrder);
+            foreach (var productInOrder in items)
+            {
+                productInOrder.Delete();
+            }
+
+            if (_seller != null)
+            {
+                RemoveSeller(_seller);
+            }
+
+            foreach (var discount in _discounts.ToList())
+            {
+                UnlinkDiscount(discount);
+            }
+
+            _extent.Remove(this);
         }
 
         public static void SaveToXml(string? directory = null)
@@ -135,7 +171,7 @@ namespace WebStore.Models
         {
         }
 
-        protected Product(string name, string description, decimal price, bool isAdultProduct, decimal weight, int stockQuantity, decimal storeFeePercentage = 5)
+        protected Product(string name, string description, decimal price, bool isAdultProduct, decimal weight, int stockQuantity, Seller seller)
         {
             Name = name;
             Description = description;
@@ -143,8 +179,91 @@ namespace WebStore.Models
             IsAdultProduct = isAdultProduct;
             Weight = weight;
             StockQuantity = stockQuantity;
-            StoreFeePercentage = storeFeePercentage;
+            LinkSeller(seller ?? throw new ArgumentNullException(nameof(seller)));
             _extent.Add(this);
+        }
+        
+        public void AddSeller(Seller seller) => LinkSeller(seller);
+
+        public void RemoveSeller(Seller seller) => UnlinkSeller(seller);
+
+        private void LinkSeller(Seller newSeller)
+        {
+            if (_seller != null && !ReferenceEquals(_seller, newSeller))
+                throw new ArgumentException("Seller cannot be changed");
+            
+            if (newSeller is null)
+                throw new ArgumentNullException(nameof(newSeller));
+            
+            _seller = newSeller;
+
+            newSeller.AddProduct(this);
+        }
+
+        private void UnlinkSeller(Seller seller)
+        {
+            if (seller is null)
+                throw new ArgumentNullException(nameof(seller));
+
+            if (!ReferenceEquals(_seller, seller))
+                return;
+
+            _seller = null!;
+            seller.RemoveProduct(this);
+        }
+
+        public void AddProductInOrder(ProductInOrder productInOrder) => LinkProductInOrder(productInOrder);
+
+        public void RemoveProductInOrder(ProductInOrder productInOrder) => UnlinkProductInOrder(productInOrder);
+
+        private void LinkProductInOrder(ProductInOrder productInOrder)
+        {
+            if (productInOrder is null)
+                throw new ArgumentNullException(nameof(productInOrder));
+
+            if (_productsInOrder.Contains(productInOrder))
+                return;
+
+            _productsInOrder.Add(productInOrder);
+        }
+
+        private void UnlinkProductInOrder(ProductInOrder productInOrder)
+        {
+            if (productInOrder is null)
+                throw new ArgumentNullException(nameof(productInOrder));
+
+            if (!_productsInOrder.Contains(productInOrder))
+                throw new InvalidOperationException("Given product line is not part of this product.");
+
+            _productsInOrder.Remove(productInOrder);
+            productInOrder.Delete();
+        }
+        
+        public void AddDiscount(Discount discount) => LinkDiscount(discount);
+
+        public void RemoveDiscount(Discount discount, bool forceDelete = false) => UnlinkDiscount(discount, forceDelete);
+
+        private void LinkDiscount(Discount discount)
+        {
+            if (discount is null)
+                throw new ArgumentNullException(nameof(discount));
+
+            if (_discounts.Contains(discount))
+                return;
+
+            _discounts.Add(discount);
+            discount.AddProduct(this);
+        }
+
+        private void UnlinkDiscount(Discount discount, bool forceDelete = false)
+        {
+            if (discount is null)
+                throw new ArgumentNullException(nameof(discount));
+
+            if (!_discounts.Remove(discount))
+                return;
+
+            discount.RemoveProduct(this, forceDelete);
         }
     }
 }

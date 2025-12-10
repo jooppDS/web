@@ -12,6 +12,8 @@ namespace WebStore.Models
         private OrderStatus _status;
         private DeliveryType _deliveryType;
         private bool _isHidden;
+        private Customer _customer = null!;
+        private readonly List<ProductInOrder> _productsInOrder = new();
 
         [Required(ErrorMessage = "Date is required")]
         public DateTime Date
@@ -29,6 +31,8 @@ namespace WebStore.Models
                 if (!Enum.IsDefined(typeof(OrderStatus), value))
                     throw new ArgumentOutOfRangeException(nameof(Status), 
                         "Status must be a valid OrderStatus value");
+                if (value == OrderStatus.Cancelled)
+                    Delete();
                 _status = value;
             }
         }
@@ -49,7 +53,26 @@ namespace WebStore.Models
         public bool IsHidden
         {
             get => _isHidden;
-            set => _isHidden = value;
+            private set => _isHidden = value;
+        }
+
+        [Required(ErrorMessage = "Customer is required")]
+        public Customer Customer
+        {
+            get => _customer;
+            private set => LinkCustomer(value ?? throw new ArgumentNullException(nameof(Customer), "Customer cannot be null"));
+        }
+        
+        public IReadOnlyCollection<ProductInOrder> ProductsInOrder => _productsInOrder.AsReadOnly();
+
+        public void HideOrder()
+        {
+            IsHidden = true;
+        }
+
+        public int GetProductInOrdersCount()
+        {
+            return _productsInOrder.Count;
         }
 
         public static List<Order> GetAll()
@@ -80,13 +103,95 @@ namespace WebStore.Models
         {
         }
 
-        public Order(DateTime date, OrderStatus status, DeliveryType deliveryType, bool isHidden = false)
+        public Order(DateTime date, OrderStatus status, DeliveryType deliveryType, Customer customer)
         {
             Date = date;
             Status = status;
             DeliveryType = deliveryType;
-            IsHidden = isHidden;
+            Customer = customer ?? throw new ArgumentNullException(nameof(customer));
+            IsHidden = false;
             _extent.Add(this);
+        }
+
+        public void Delete()
+        {
+            foreach (var productInOrder in _productsInOrder.ToList())
+            {
+                productInOrder.Delete();
+            }
+
+            if (_customer != null)
+            {
+                RemoveCustomer(_customer);
+            }
+
+            _extent.Remove(this);
+        }
+
+
+        public void AddCustomer(Customer customer) => LinkCustomer(customer);
+
+        public void RemoveCustomer(Customer customer) => UnlinkCustomer(customer);
+
+        private void LinkCustomer(Customer customer)
+        {
+            if (customer is null)
+                throw new ArgumentNullException(nameof(customer));
+
+            if (ReferenceEquals(_customer, customer))
+                return;
+
+            var oldCustomer = _customer;
+            _customer = customer;
+
+            customer.AddOrder(this);
+
+            if (oldCustomer != null && !ReferenceEquals(oldCustomer, customer))
+            {
+                oldCustomer.RemoveOrder(this, true);
+            }
+        }
+
+        private void UnlinkCustomer(Customer customer)
+        {
+            if (customer is null)
+                throw new ArgumentNullException(nameof(customer));
+
+            if (!ReferenceEquals(_customer, customer))
+                return;
+
+            _customer = null!;
+            customer.RemoveOrder(this, true);
+        }
+        
+        public void AddProductInOrder(ProductInOrder productInOrder) => LinkProductInOrder(productInOrder);
+
+        public void RemoveProductInOrder(ProductInOrder productInOrder) => UnlinkProductInOrder(productInOrder);
+
+        private void LinkProductInOrder(ProductInOrder productInOrder)
+        {
+            if (productInOrder is null)
+                throw new ArgumentNullException(nameof(productInOrder));
+
+            if (productInOrder.Product.IsAdultProduct && _customer.Age < Person.LegalAdultAge)
+                throw new ArgumentException("Customer does not meet the age requirement");
+            
+            if (_productsInOrder.Contains(productInOrder))
+                return;
+
+            _productsInOrder.Add(productInOrder);
+        }
+
+        private void UnlinkProductInOrder(ProductInOrder productInOrder)
+        {
+            if (productInOrder is null)
+                throw new ArgumentNullException(nameof(productInOrder));
+            
+            if (!_productsInOrder.Contains(productInOrder))
+                throw new InvalidOperationException("Given product line is not part of this order.");
+
+            _productsInOrder.Remove(productInOrder);
+            productInOrder.Delete();
         }
     }
 }

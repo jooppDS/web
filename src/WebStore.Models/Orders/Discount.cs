@@ -11,6 +11,7 @@ namespace WebStore.Models
         private string _description = string.Empty;
         private DateTime _startDate;
         private DateTime _endDate;
+        private readonly List<Product> _products = new();
 
         [Required(ErrorMessage = "Total percentage is required")]
         [Range(0, 100, ErrorMessage = "Total percentage must be between 0 and 100")]
@@ -66,6 +67,12 @@ namespace WebStore.Models
             return new List<Discount>(_extent);
         }
 
+        public IReadOnlyCollection<Product> Products => _products.AsReadOnly();
+
+        public void AddProduct(Product product) => LinkProduct(product);
+
+        public void RemoveProduct(Product product, bool forceDelete = false) => UnlinkProduct(product, forceDelete);
+
         public static void SaveToXml(string? directory = null)
         {
             XmlPersistenceService.SaveToXml(_extent, "Discounts", directory);
@@ -89,13 +96,52 @@ namespace WebStore.Models
         {
         }
 
-        public Discount(decimal totalPercentage, string description, DateTime startDate, DateTime endDate)
+        public Discount(decimal totalPercentage, string description, DateTime startDate, DateTime endDate, Product product)
         {
             TotalPercentage = totalPercentage;
             Description = description;
             StartDate = startDate;
             EndDate = endDate;
+            AddProduct(product);
             _extent.Add(this);
+        }
+        
+        public void Delete()
+        {
+            var items = new List<Product>(_products);
+            foreach (var product in items)
+            {
+                product.RemoveDiscount(this, true);
+            }
+
+            _extent.Remove(this);
+        }
+        
+        private void LinkProduct(Product product)
+        {
+            if (product is null)
+                throw new ArgumentNullException(nameof(product));
+
+            if (_products.Contains(product))
+                return;
+
+            _products.Add(product);
+            product.AddDiscount(this);
+        }
+
+        private void UnlinkProduct(Product product, bool forceDelete = false)
+        {
+            if (product is null)
+                throw new ArgumentNullException(nameof(product));
+
+            if (!_products.Contains(product))
+                return;
+
+            if (!forceDelete && _products.Count <= 1)
+                throw new InvalidOperationException("Discount must be associated with at least one product.");
+
+            _products.Remove(product);
+            product.RemoveDiscount(this);
         }
     }
 }
