@@ -105,7 +105,17 @@ namespace WebStore.Models
             AddProduct(product);
             _extent.Add(this);
         }
+        
+        public void Delete()
+        {
+            foreach (var product in _products)
+            {
+                product.RemoveDiscount(this);
+            }
 
+            _extent.Remove(this);
+        }
+        
         private void LinkProduct(Product product)
         {
             if (product is null)

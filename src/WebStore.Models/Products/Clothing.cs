@@ -111,6 +111,16 @@ namespace WebStore.Models
             _extent.Add(this);
         }
 
+        public new void Delete()
+        {
+            base.Delete();
+            foreach (var clothing in _relatedClothing)
+            {
+                clothing.RemoveRelatedClothing(this);
+            }
+
+            _extent.Remove(this);
+        }
 
         public void AddRelatedClothing(Clothing other) => LinkRelatedClothing(other);
 
