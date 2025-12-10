@@ -66,4 +66,15 @@ public class QualifiedAssociationTests
         product1.Delete();
         Assert.That(seller.Products.Count, Is.EqualTo(0));
     }
+
+    [Test]
+    public void ChangingAlreadyAssignedSeller_ThrowsArgumentException()
+    {
+        var seller1 = new Seller("SellerName1", new Address());
+        var seller2 = new Seller("9mice", new Address());
+        var product = new New("product1", "description", 10, false, 10, 10, new TimeSpan(1), seller1);
+        
+        Assert.Throws<ArgumentException>(() => product.AddSeller(seller2));
+        
+    }
 }
