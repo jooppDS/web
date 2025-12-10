@@ -248,7 +248,7 @@ namespace WebStore.Models
         
         public void AddDiscount(Discount discount) => LinkDiscount(discount);
 
-        public void RemoveDiscount(Discount discount) => UnlinkDiscount(discount);
+        public void RemoveDiscount(Discount discount, bool forceDelete = false) => UnlinkDiscount(discount, forceDelete);
 
         private void LinkDiscount(Discount discount)
         {
@@ -262,7 +262,7 @@ namespace WebStore.Models
             discount.AddProduct(this);
         }
 
-        private void UnlinkDiscount(Discount discount)
+        private void UnlinkDiscount(Discount discount, bool forceDelete = false)
         {
             if (discount is null)
                 throw new ArgumentNullException(nameof(discount));
@@ -270,7 +270,7 @@ namespace WebStore.Models
             if (!_discounts.Remove(discount))
                 return;
 
-            discount.RemoveProduct(this);
+            discount.RemoveProduct(this, forceDelete);
         }
     }
 }

@@ -71,7 +71,7 @@ namespace WebStore.Models
 
         public void AddProduct(Product product) => LinkProduct(product);
 
-        public void RemoveProduct(Product product) => UnlinkProduct(product);
+        public void RemoveProduct(Product product, bool forceDelete = false) => UnlinkProduct(product, forceDelete);
 
         public static void SaveToXml(string? directory = null)
         {
@@ -108,9 +108,10 @@ namespace WebStore.Models
         
         public void Delete()
         {
-            foreach (var product in _products)
+            var items = new List<Product>(_products);
+            foreach (var product in items)
             {
-                product.RemoveDiscount(this);
+                product.RemoveDiscount(this, true);
             }
 
             _extent.Remove(this);
@@ -128,7 +129,7 @@ namespace WebStore.Models
             product.AddDiscount(this);
         }
 
-        private void UnlinkProduct(Product product)
+        private void UnlinkProduct(Product product, bool forceDelete = false)
         {
             if (product is null)
                 throw new ArgumentNullException(nameof(product));
@@ -136,7 +137,7 @@ namespace WebStore.Models
             if (!_products.Contains(product))
                 return;
 
-            if (_products.Count <= 1)
+            if (!forceDelete && _products.Count <= 1)
                 throw new InvalidOperationException("Discount must be associated with at least one product.");
 
             _products.Remove(product);

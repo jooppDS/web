@@ -114,7 +114,8 @@ namespace WebStore.Models
         public new void Delete()
         {
             base.Delete();
-            foreach (var clothing in _relatedClothing)
+            var items = new List<Clothing>(_relatedClothing);
+            foreach (var clothing in items)
             {
                 clothing.RemoveRelatedClothing(this);
             }
