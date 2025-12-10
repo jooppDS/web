@@ -82,9 +82,6 @@ namespace WebStore.Models
 
         public void Delete(bool forceDelete = false)
         {
-            if (forceDelete == false && OrderItemsCountForOrderIsOne())
-                throw new InvalidOperationException("Cannot remove the last product from an order. An order must contain at least one product.");
-
             _extent.Remove(this);
 
             var product = _product;
@@ -100,16 +97,6 @@ namespace WebStore.Models
                 UnlinkOrder(order);
             }
         }
-        
-        private bool OrderItemsCountForOrderIsOne()
-        {
-            return Order.GetProductInOrdersCount() == 1;
-        }
-
-
-        public void AddProduct(Product product) => LinkProduct(product);
-
-        public void RemoveProduct(Product product) => UnlinkProduct(product);
 
         private void LinkProduct(Product product)
         {
@@ -147,10 +134,6 @@ namespace WebStore.Models
                 product.RemoveProductInOrder(this);
             }
         }
-
-        public void AddOrder(Order order) => LinkOrder(order);
-
-        public void RemoveOrder(Order order) => UnlinkOrder(order);
 
         private void LinkOrder(Order order)
         {

@@ -80,14 +80,6 @@ namespace WebStore.Models
             return _productsInOrder.Count;
         }
 
-        public ProductInOrder AddProduct(Product product, int quantity)
-        {
-            if (product is null)
-                throw new ArgumentNullException(nameof(product));
-
-            return new ProductInOrder(product, this, quantity);
-        }
-
         public static List<Order> GetAll()
         {
             return new List<Order>(_extent);
@@ -176,21 +168,10 @@ namespace WebStore.Models
             _customer = null!;
             customer.RemoveOrder(this, suppressException: true);
         }
-
-
+        
         public void AddProductInOrder(ProductInOrder productInOrder) => LinkProductInOrder(productInOrder);
 
-        public void RemoveProductInOrder(ProductInOrder productInOrder)
-        {
-            if (productInOrder is null)
-                throw new ArgumentNullException(nameof(productInOrder));
-
-            if (!_productsInOrder.Contains(productInOrder))
-                throw new InvalidOperationException("Given product line is not part of this order.");
-
-            _productsInOrder.Remove(productInOrder);
-            productInOrder.Delete(true);
-        }
+        public void RemoveProductInOrder(ProductInOrder productInOrder) => UnlinkProductInOrder(productInOrder);
 
         private void LinkProductInOrder(ProductInOrder productInOrder)
         {
@@ -201,24 +182,18 @@ namespace WebStore.Models
                 return;
 
             _productsInOrder.Add(productInOrder);
-            if (!ReferenceEquals(productInOrder.Order, this))
-            {
-                productInOrder.AddOrder(this);
-            }
         }
 
         private void UnlinkProductInOrder(ProductInOrder productInOrder)
         {
             if (productInOrder is null)
                 throw new ArgumentNullException(nameof(productInOrder));
+            
+            if (!_productsInOrder.Contains(productInOrder))
+                throw new InvalidOperationException("Given product line is not part of this order.");
 
-            if (!_productsInOrder.Remove(productInOrder))
-                return;
-
-            if (ReferenceEquals(productInOrder.Order, this))
-            {
-                productInOrder.RemoveOrder(this);
-            }
+            _productsInOrder.Remove(productInOrder);
+            productInOrder.Delete(true);
         }
     }
 }

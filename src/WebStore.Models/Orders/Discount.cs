@@ -96,12 +96,13 @@ namespace WebStore.Models
         {
         }
 
-        public Discount(decimal totalPercentage, string description, DateTime startDate, DateTime endDate)
+        public Discount(decimal totalPercentage, string description, DateTime startDate, DateTime endDate, Product product)
         {
             TotalPercentage = totalPercentage;
             Description = description;
             StartDate = startDate;
             EndDate = endDate;
+            AddProduct(product);
             _extent.Add(this);
         }
 
@@ -125,7 +126,7 @@ namespace WebStore.Models
             if (!_products.Contains(product))
                 return;
 
-            if (_products.Count == 1)
+            if (_products.Count <= 1)
                 throw new InvalidOperationException("Discount must be associated with at least one product.");
 
             _products.Remove(product);

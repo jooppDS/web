@@ -122,14 +122,6 @@ namespace WebStore.Models
 
         public IReadOnlyCollection<Discount> Discounts => _discounts.AsReadOnly();
 
-        public ProductInOrder AddProductToOrder(Order order, int quantity)
-        {
-            if (order is null)
-                throw new ArgumentNullException(nameof(order));
-
-            return order.AddProduct(this, quantity);
-        }
-
         public static List<Product> GetAll()
         {
             return new List<Product>(_extent);
@@ -229,17 +221,7 @@ namespace WebStore.Models
 
         public void AddProductInOrder(ProductInOrder productInOrder) => LinkProductInOrder(productInOrder);
 
-        public void RemoveProductInOrder(ProductInOrder productInOrder)
-        {
-            if (productInOrder is null)
-                throw new ArgumentNullException(nameof(productInOrder));
-
-            if (!_productsInOrder.Contains(productInOrder))
-                throw new InvalidOperationException("Given product line is not part of this product.");
-
-            _productsInOrder.Remove(productInOrder);
-            productInOrder.Delete(true);
-        }
+        public void RemoveProductInOrder(ProductInOrder productInOrder) => UnlinkProductInOrder(productInOrder);
 
         private void LinkProductInOrder(ProductInOrder productInOrder)
         {
@@ -250,10 +232,6 @@ namespace WebStore.Models
                 return;
 
             _productsInOrder.Add(productInOrder);
-            if (!ReferenceEquals(productInOrder.Product, this))
-            {
-                productInOrder.AddProduct(this);
-            }
         }
 
         private void UnlinkProductInOrder(ProductInOrder productInOrder)
@@ -261,16 +239,13 @@ namespace WebStore.Models
             if (productInOrder is null)
                 throw new ArgumentNullException(nameof(productInOrder));
 
-            if (!_productsInOrder.Remove(productInOrder))
-                return;
+            if (!_productsInOrder.Contains(productInOrder))
+                throw new InvalidOperationException("Given product line is not part of this product.");
 
-            if (ReferenceEquals(productInOrder.Product, this))
-            {
-                productInOrder.RemoveProduct(this);
-            }
+            _productsInOrder.Remove(productInOrder);
+            productInOrder.Delete(true);
         }
-
-
+        
         public void AddDiscount(Discount discount) => LinkDiscount(discount);
 
         public void RemoveDiscount(Discount discount) => UnlinkDiscount(discount);
