@@ -190,21 +190,15 @@ namespace WebStore.Models
 
         private void LinkSeller(Seller newSeller)
         {
+            if (_seller != null)
+                throw new ArgumentException("Seller cannot be changed");
+            
             if (newSeller is null)
                 throw new ArgumentNullException(nameof(newSeller));
-
-            if (ReferenceEquals(_seller, newSeller))
-                return;
-
-            var oldSeller = _seller;
+            
             _seller = newSeller;
 
             newSeller.AddProduct(this);
-
-            if (oldSeller != null && !ReferenceEquals(oldSeller, newSeller))
-            {
-                oldSeller.RemoveProduct(this);
-            }
         }
 
         private void UnlinkSeller(Seller seller)

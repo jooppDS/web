@@ -178,6 +178,9 @@ namespace WebStore.Models
             if (productInOrder is null)
                 throw new ArgumentNullException(nameof(productInOrder));
 
+            if (productInOrder.Product.IsAdultProduct && _customer.Age < Person.LegalAdultAge)
+                throw new ArgumentException("Customer does not meet the age requirement");
+            
             if (_productsInOrder.Contains(productInOrder))
                 return;
 

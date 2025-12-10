@@ -82,7 +82,17 @@ namespace WebStore.Models
                 throw new InvalidOperationException($"A ProductInOrder with product '{product}' and order '{order}' already exists.");
             
             LinkProduct(product);
-            LinkOrder(order);
+            try
+            {
+                LinkOrder(order);
+            }
+            catch (ArgumentException ex)
+            {
+                product.RemoveProductInOrder(this);
+                throw;
+            }
+
+
             Quantity = quantity;
             _extent.Add(this);
         }
