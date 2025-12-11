@@ -122,7 +122,7 @@ namespace WebStore.Models
 
             if (_customer != null)
             {
-                RemoveCustomer(_customer);
+                RemoveCustomer(_customer, true);
             }
 
             _extent.Remove(this);
@@ -131,7 +131,7 @@ namespace WebStore.Models
 
         public void AddCustomer(Customer customer) => LinkCustomer(customer);
 
-        public void RemoveCustomer(Customer customer) => UnlinkCustomer(customer);
+        public void RemoveCustomer(Customer customer, bool suppressException = false) => UnlinkCustomer(customer, suppressException);
 
         private void LinkCustomer(Customer customer)
         {
@@ -152,7 +152,7 @@ namespace WebStore.Models
             }
         }
 
-        private void UnlinkCustomer(Customer customer)
+        private void UnlinkCustomer(Customer customer, bool suppressException = false)
         {
             if (customer is null)
                 throw new ArgumentNullException(nameof(customer));
@@ -160,8 +160,14 @@ namespace WebStore.Models
             if (!ReferenceEquals(_customer, customer))
                 return;
 
-            _customer = null!;
-            customer.RemoveOrder(this, true);
+            if (suppressException)
+            {
+                _customer = null!;
+                customer.RemoveOrder(this, true);
+                return;
+            }
+            
+            throw new InvalidOperationException("Cannot remove customer from order");
         }
         
         public void AddProductInOrder(ProductInOrder productInOrder) => LinkProductInOrder(productInOrder);
