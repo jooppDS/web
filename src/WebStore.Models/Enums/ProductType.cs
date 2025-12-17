@@ -1,6 +1,6 @@
 ﻿namespace WebStore.Models.Enums
 {
-    public enum ProductState
+    public enum ProductType
     {
         New,
         Used

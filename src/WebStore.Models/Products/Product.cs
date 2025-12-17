@@ -9,18 +9,18 @@ namespace WebStore.Models
     {
         private static List<Product> _extent = new List<Product>();
 
-        private ProductState _state;
+        private ProductType _type;
 
         [Required]
-        public ProductState State
+        public ProductType Type
         {
-            get => _state;
+            get => _type;
             private init
             {
-                if (!Enum.IsDefined(typeof(ProductState), value))
-                    throw new ArgumentOutOfRangeException(nameof(ProductState), 
+                if (!Enum.IsDefined(typeof(ProductType), value))
+                    throw new ArgumentOutOfRangeException(nameof(ProductType), 
                         "ProductState must be a valid ProductState value");
-                _state = value;
+                _type = value;
             }
         }
         
@@ -31,13 +31,13 @@ namespace WebStore.Models
         {
             get
             {
-                if (State != ProductState.New)
+                if (Type != ProductType.New)
                     throw new InvalidOperationException("WarrantyPeriod cannot be accessed when the Product is not of the type New.");
                 return _warrantyPeriod;
             }
             set
             {
-                if (State != ProductState.New)
+                if (Type != ProductType.New)
                     throw new InvalidOperationException("WarrantyPeriod cannot be set when the Product is not of the type New.");
                 if (value is null)
                     throw new ArgumentNullException(nameof(value), "WarrantyPeriod cannot be null.");
@@ -56,13 +56,13 @@ namespace WebStore.Models
         {
             get
             {
-                if (State != ProductState.Used)
+                if (Type != ProductType.Used)
                     throw new InvalidOperationException("Condition cannot be accessed when the Product is not of the type Used.");
                 return _condition;
             }
             set
             {
-                if (State != ProductState.Used)
+                if (Type != ProductType.Used)
                     throw new InvalidOperationException("Condition cannot be set when the Product is not of the type Used.");
                 if (value is null)
                     throw new ArgumentNullException(nameof(value), "Condition cannot be null.");
@@ -78,13 +78,13 @@ namespace WebStore.Models
         {
             get
             {
-                if (State != ProductState.Used)
+                if (Type != ProductType.Used)
                     throw new InvalidOperationException("DefectsDescription cannot be accessed when the Product is not of the type Used.");
                 return _defectsDescription;
             }
             set
             {
-                if (State != ProductState.Used)
+                if (Type != ProductType.Used)
                     throw new InvalidOperationException("DefectsDescription cannot be set when the Product is not of the type Used.");
                 if (value is null)
                     throw new ArgumentNullException(nameof(value), "DefectsDescription cannot be null.");
@@ -260,7 +260,7 @@ namespace WebStore.Models
 
         protected Product(string name, string description, decimal price, bool isAdultProduct, decimal weight, int stockQuantity, Seller seller, TimeSpan warrantyPeriod)
         {
-            State = ProductState.New;
+            Type = ProductType.New;
             Name = name;
             Description = description;
             Price = price;
@@ -274,7 +274,7 @@ namespace WebStore.Models
         
         protected Product(string name, string description, decimal price, bool isAdultProduct, decimal weight, int stockQuantity, Seller seller, ProductCondition condition, string defectsDescription)
         {
-            State = ProductState.Used;
+            Type = ProductType.Used;
             Name = name;
             Description = description;
             Price = price;
