@@ -35,11 +35,13 @@ namespace WebStore.Models
                     throw new InvalidOperationException("WarrantyPeriod cannot be accessed when the Product is not of the type New.");
                 return _warrantyPeriod;
             }
-            private set
+            set
             {
                 if (State != ProductState.New)
                     throw new InvalidOperationException("WarrantyPeriod cannot be set when the Product is not of the type New.");
-                if (value != null && value <= TimeSpan.Zero)
+                if (value is null)
+                    throw new ArgumentNullException(nameof(value), "WarrantyPeriod cannot be null.");
+                if (value <= TimeSpan.Zero)
                     throw new ArgumentOutOfRangeException(nameof(WarrantyPeriod), 
                         "Warranty period must be positive");
                 _warrantyPeriod = value;
@@ -58,11 +60,13 @@ namespace WebStore.Models
                     throw new InvalidOperationException("Condition cannot be accessed when the Product is not of the type Used.");
                 return _condition;
             }
-            private set
+            set
             {
                 if (State != ProductState.Used)
                     throw new InvalidOperationException("Condition cannot be set when the Product is not of the type Used.");
-                if (value != null && !Enum.IsDefined(typeof(ProductCondition), value))
+                if (value is null)
+                    throw new ArgumentNullException(nameof(value), "Condition cannot be null.");
+                if (!Enum.IsDefined(typeof(ProductCondition), value))
                     throw new ArgumentOutOfRangeException(nameof(Condition), 
                         "Condition must be a valid ProductCondition value");
                 _condition = value;
@@ -78,11 +82,13 @@ namespace WebStore.Models
                     throw new InvalidOperationException("DefectsDescription cannot be accessed when the Product is not of the type Used.");
                 return _defectsDescription;
             }
-            private set
+            set
             {
                 if (State != ProductState.Used)
                     throw new InvalidOperationException("DefectsDescription cannot be set when the Product is not of the type Used.");
-                if (value != null && (value.Length < 5 || value.Length > 1000))
+                if (value is null)
+                    throw new ArgumentNullException(nameof(value), "DefectsDescription cannot be null.");
+                if (value.Length < 5 || value.Length > 1000)
                     throw new ArgumentException("Defects description must be between 5 and 1000 characters", nameof(DefectsDescription));
                 _defectsDescription = value;
             }
