@@ -48,6 +48,16 @@ namespace WebStore.Models
             }
         }
 
+        public decimal Rating
+        {
+            get
+            {
+                if (Type != ProductType.New)
+                    throw new InvalidOperationException("Rating cannot be accessed when the Product is not of the type New.");
+                throw new NotImplementedException(); // well at least it checks the product type lmao
+            }
+        }
+
         // Used product only
         private ProductCondition? _condition;
         private string? _defectsDescription = string.Empty;
