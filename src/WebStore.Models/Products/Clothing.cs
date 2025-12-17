@@ -101,8 +101,19 @@ namespace WebStore.Models
         }
 
         public Clothing(string name, string description, decimal price, bool isAdultProduct, decimal weight, int stockQuantity, 
-            List<string> materials, ClothingSize size, Gender gender, string careInstruction, Seller seller)
-            : base(name, description, price, isAdultProduct, weight, stockQuantity, seller)
+            TimeSpan warrantyPeriod, List<string> materials, ClothingSize size, Gender gender, string careInstruction, Seller seller)
+            : base(name, description, price, isAdultProduct, weight, stockQuantity, seller, warrantyPeriod)
+        {
+            Materials = materials;
+            Size = size;
+            Gender = gender;
+            CareInstruction = careInstruction;
+            _extent.Add(this);
+        }
+        
+        public Clothing(string name, string description, decimal price, bool isAdultProduct, decimal weight, int stockQuantity, 
+            ProductCondition productCondition, string defectsDescription, List<string> materials, ClothingSize size, Gender gender, string careInstruction, Seller seller)
+            : base(name, description, price, isAdultProduct, weight, stockQuantity, seller, productCondition, defectsDescription)
         {
             Materials = materials;
             Size = size;

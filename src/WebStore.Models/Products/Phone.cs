@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using WebStore.Models.Enums;
 using WebStore.Models.Persistence;
 
 namespace WebStore.Models
@@ -90,8 +91,19 @@ namespace WebStore.Models
         }
 
         public Phone(string name, string description, decimal price, bool isAdultProduct, decimal weight, int stockQuantity, 
-            bool isWaterproof, int storageCapacity, int batteryCapacity, string cpu, Seller seller)
-            : base(name, description, price, isAdultProduct, weight, stockQuantity, seller)
+            TimeSpan warrantyPeriod, bool isWaterproof, int storageCapacity, int batteryCapacity, string cpu, Seller seller)
+            : base(name, description, price, isAdultProduct, weight, stockQuantity, seller, warrantyPeriod)
+        {
+            IsWaterproof = isWaterproof;
+            StorageCapacity = storageCapacity;
+            BatteryCapacity = batteryCapacity;
+            CPU = cpu;
+            _extent.Add(this);
+        }
+        
+        public Phone(string name, string description, decimal price, bool isAdultProduct, decimal weight, int stockQuantity, 
+            ProductCondition productCondition, string defectsDescription, bool isWaterproof, int storageCapacity, int batteryCapacity, string cpu, Seller seller)
+            : base(name, description, price, isAdultProduct, weight, stockQuantity, seller, productCondition, defectsDescription)
         {
             IsWaterproof = isWaterproof;
             StorageCapacity = storageCapacity;

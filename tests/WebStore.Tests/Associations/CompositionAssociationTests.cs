@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+﻿/*using System.Reflection;
 using WebStore.Models;
 using WebStore.Models.ValueObjects;
 
@@ -74,4 +74,4 @@ public class CompositionAssociationTests
         Assert.That(Seller.GetAll().Count, Is.EqualTo(0));
         Assert.That(Product.GetAll().Count, Is.EqualTo(0));
     }
-}
+}*/

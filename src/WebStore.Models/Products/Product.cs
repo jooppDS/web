@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Xml.Serialization;
+using WebStore.Models.Enums;
 using WebStore.Models.Persistence;
 
 namespace WebStore.Models
@@ -8,6 +9,86 @@ namespace WebStore.Models
     {
         private static List<Product> _extent = new List<Product>();
 
+        private ProductState _state;
+
+        [Required]
+        public ProductState State
+        {
+            get => _state;
+            private init
+            {
+                if (!Enum.IsDefined(typeof(ProductState), value))
+                    throw new ArgumentOutOfRangeException(nameof(ProductState), 
+                        "ProductState must be a valid ProductState value");
+                _state = value;
+            }
+        }
+        
+        // New product only
+        private TimeSpan? _warrantyPeriod;
+        
+        public TimeSpan? WarrantyPeriod
+        {
+            get
+            {
+                if (State != ProductState.New)
+                    throw new InvalidOperationException("WarrantyPeriod cannot be accessed when the Product is not of the type New.");
+                return _warrantyPeriod;
+            }
+            private set
+            {
+                if (State != ProductState.New)
+                    throw new InvalidOperationException("WarrantyPeriod cannot be set when the Product is not of the type New.");
+                if (value != null && value <= TimeSpan.Zero)
+                    throw new ArgumentOutOfRangeException(nameof(WarrantyPeriod), 
+                        "Warranty period must be positive");
+                _warrantyPeriod = value;
+            }
+        }
+
+        // Used product only
+        private ProductCondition? _condition;
+        private string? _defectsDescription = string.Empty;
+
+        public ProductCondition? Condition
+        {
+            get
+            {
+                if (State != ProductState.Used)
+                    throw new InvalidOperationException("Condition cannot be accessed when the Product is not of the type Used.");
+                return _condition;
+            }
+            private set
+            {
+                if (State != ProductState.Used)
+                    throw new InvalidOperationException("Condition cannot be set when the Product is not of the type Used.");
+                if (value != null && !Enum.IsDefined(typeof(ProductCondition), value))
+                    throw new ArgumentOutOfRangeException(nameof(Condition), 
+                        "Condition must be a valid ProductCondition value");
+                _condition = value;
+            }
+        }
+
+        [StringLength(1000, MinimumLength = 5, ErrorMessage = "Defects description must be between 5 and 1000 characters")]
+        public string? DefectsDescription
+        {
+            get
+            {
+                if (State != ProductState.Used)
+                    throw new InvalidOperationException("DefectsDescription cannot be accessed when the Product is not of the type Used.");
+                return _defectsDescription;
+            }
+            private set
+            {
+                if (State != ProductState.Used)
+                    throw new InvalidOperationException("DefectsDescription cannot be set when the Product is not of the type Used.");
+                if (value != null && (value.Length < 5 || value.Length > 1000))
+                    throw new ArgumentException("Defects description must be between 5 and 1000 characters", nameof(DefectsDescription));
+                _defectsDescription = value;
+            }
+        }
+
+        // Generic product stuff
         private string _name = string.Empty;
         private string _description = string.Empty;
         private decimal _price;
@@ -171,8 +252,9 @@ namespace WebStore.Models
         {
         }
 
-        protected Product(string name, string description, decimal price, bool isAdultProduct, decimal weight, int stockQuantity, Seller seller)
+        protected Product(string name, string description, decimal price, bool isAdultProduct, decimal weight, int stockQuantity, Seller seller, TimeSpan warrantyPeriod)
         {
+            State = ProductState.New;
             Name = name;
             Description = description;
             Price = price;
@@ -180,6 +262,22 @@ namespace WebStore.Models
             Weight = weight;
             StockQuantity = stockQuantity;
             LinkSeller(seller ?? throw new ArgumentNullException(nameof(seller)));
+            WarrantyPeriod = warrantyPeriod;
+            _extent.Add(this);
+        }
+        
+        protected Product(string name, string description, decimal price, bool isAdultProduct, decimal weight, int stockQuantity, Seller seller, ProductCondition condition, string defectsDescription)
+        {
+            State = ProductState.Used;
+            Name = name;
+            Description = description;
+            Price = price;
+            IsAdultProduct = isAdultProduct;
+            Weight = weight;
+            StockQuantity = stockQuantity;
+            LinkSeller(seller ?? throw new ArgumentNullException(nameof(seller)));
+            Condition = condition;
+            DefectsDescription = defectsDescription;
             _extent.Add(this);
         }
         
