@@ -1,3 +1,4 @@
+/*
 using System.ComponentModel.DataAnnotations;
 using WebStore.Models.ValueObjects;
 using WebStore.Models.Persistence;
@@ -35,7 +36,7 @@ namespace WebStore.Models
                 var today = DateTime.Today;
                 var age = today.Year - DateOfBirth.Year;
                 if (DateOfBirth.Date > today.AddYears(-age)) age--;
-                return age;
+                return age;/*#1#
             }
         }
 
@@ -133,4 +134,5 @@ namespace WebStore.Models
         }
     }
 }
+*/
 

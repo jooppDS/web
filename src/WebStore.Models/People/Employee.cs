@@ -1,3 +1,4 @@
+/*
 using System.ComponentModel.DataAnnotations;
 using WebStore.Models.Enums;
 using WebStore.Models.Persistence;
@@ -75,3 +76,4 @@ namespace WebStore.Models
         }
     }
 }
+*/
