@@ -8,7 +8,7 @@ using WebStore.Models.ValueObjects;
 namespace WebStore.Models
 {
 
-    public abstract class Person
+    public class Person
     {
         private static List<Person> _extent = new List<Person>();
         
@@ -87,13 +87,13 @@ namespace WebStore.Models
         {
             get
             {
-                if (PersonRole != PersonRole.EmployeeCustomer || PersonRole != PersonRole.Customer)
+                if (PersonRole != PersonRole.EmployeeCustomer && PersonRole != PersonRole.Customer)
                     throw new InvalidOperationException("Cannot get date of birth for not customer or employee customer");
                 return _dateOfBirth;
             }
             set
             {
-                if (PersonRole != PersonRole.EmployeeCustomer || PersonRole != PersonRole.Customer)
+                if (PersonRole != PersonRole.EmployeeCustomer && PersonRole != PersonRole.Customer)
                     throw new InvalidOperationException("Cannot set date of birth for not customer or employee customer");
                 if (value > DateTime.Today)
                     throw new ArgumentOutOfRangeException(nameof(DateOfBirth), 
@@ -109,13 +109,13 @@ namespace WebStore.Models
         {
             get
             {
-                if (PersonRole != PersonRole.EmployeeCustomer || PersonRole != PersonRole.Customer)
+                if (PersonRole != PersonRole.EmployeeCustomer && PersonRole != PersonRole.Customer)
                     throw new InvalidOperationException("Cannot get shipping address for not customer or employee customer");
                 return ShippingAddress;
             }
             set
             {
-                if (PersonRole != PersonRole.EmployeeCustomer || PersonRole != PersonRole.Customer)
+                if (PersonRole != PersonRole.EmployeeCustomer && PersonRole != PersonRole.Customer)
                     throw new InvalidOperationException("Cannot set shipping address for not customer or employee customer");
                 ShippingAddress = value;
             }
@@ -124,7 +124,7 @@ namespace WebStore.Models
         {
             get
             {
-                if (PersonRole != PersonRole.EmployeeCustomer || PersonRole != PersonRole.Customer)
+                if (PersonRole != PersonRole.EmployeeCustomer && PersonRole != PersonRole.Customer)
                     throw new InvalidOperationException("Cannot get age for not customer or employee customer");
                 
                 if (DateOfBirth is null) return null;
@@ -145,13 +145,13 @@ namespace WebStore.Models
         {
             get
             {
-                if (PersonRole != PersonRole.Employee || PersonRole != PersonRole.EmployeeCustomer) 
+                if (PersonRole != PersonRole.Employee && PersonRole != PersonRole.EmployeeCustomer) 
                     throw new InvalidOperationException("Cannot get employee role for not employee or employee customer");
                 return _employeeRole;
             }
             set
             {
-                if (PersonRole != PersonRole.Employee || PersonRole != PersonRole.EmployeeCustomer) 
+                if (PersonRole != PersonRole.Employee && PersonRole != PersonRole.EmployeeCustomer) 
                     throw new InvalidOperationException("Cannot set employee role for not employee or employee customer");
                 if (!Enum.IsDefined(typeof(EmployeeRole), value))
                     throw new ArgumentOutOfRangeException(nameof(EmployeeRole), 
@@ -164,13 +164,13 @@ namespace WebStore.Models
         {
             get
             {
-                if (PersonRole != PersonRole.Employee || PersonRole != PersonRole.EmployeeCustomer) 
+                if (PersonRole != PersonRole.Employee && PersonRole != PersonRole.EmployeeCustomer) 
                     throw new InvalidOperationException("Cannot get salary for not employee or employee customer");
                 return _salary;
             }
             set
             {
-                if (PersonRole != PersonRole.Employee || PersonRole != PersonRole.EmployeeCustomer) 
+                if (PersonRole != PersonRole.Employee && PersonRole != PersonRole.EmployeeCustomer) 
                     throw new InvalidOperationException("Cannot set salary for not employee or employee customer");
                 if (value < 0)
                     throw new ArgumentOutOfRangeException(nameof(Salary), 
@@ -178,7 +178,13 @@ namespace WebStore.Models
                 _salary = value;
             }
         }
-        
+
+        public void CheckSalary()
+        {
+            if (PersonRole != PersonRole.Employee && PersonRole != PersonRole.EmployeeCustomer)
+                throw new InvalidOperationException("Cannot check salary for not employee or employee customer");
+            throw new NotImplementedException(); // nobody needs that method LOL
+        }
         
         
 
@@ -212,7 +218,7 @@ namespace WebStore.Models
      
         protected Person()
         {
-          
+
         }
 
 
@@ -229,6 +235,7 @@ namespace WebStore.Models
             _extent.Add(this);
         }
 
+        //employee
         public Person(string firstName, string lastName, string phoneNumber, EmployeeRole employeeRole, decimal salary)
         {
             PersonRole = PersonRole.Employee;
@@ -241,11 +248,11 @@ namespace WebStore.Models
             _extent.Add(this);
         }
 
+        //employeecustomer
         public Person(string firstName, string lastName, string phoneNumber, DateTime dateOfBirth,
             EmployeeRole employeeRole, decimal salary)
         {
             PersonRole = PersonRole.EmployeeCustomer;
-            PersonRole = PersonRole.Employee;
             FirstName = firstName;
             LastName = lastName;
             PhoneNumber = phoneNumber;

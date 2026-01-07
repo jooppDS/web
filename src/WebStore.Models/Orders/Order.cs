@@ -12,7 +12,7 @@ namespace WebStore.Models
         private OrderStatus _status;
         private DeliveryType _deliveryType;
         private bool _isHidden;
-        private Customer _customer = null!;
+        // Customer _customer = null!;
         private readonly List<ProductInOrder> _productsInOrder = new();
 
         [Required(ErrorMessage = "Date is required")]
@@ -56,12 +56,12 @@ namespace WebStore.Models
             private set => _isHidden = value;
         }
 
-        [Required(ErrorMessage = "Customer is required")]
+        /*[Required(ErrorMessage = "Customer is required")]
         public Customer Customer
         {
             get => _customer;
             private set => LinkCustomer(value ?? throw new ArgumentNullException(nameof(Customer), "Customer cannot be null"));
-        }
+        }*/
         
         public IReadOnlyCollection<ProductInOrder> ProductsInOrder => _productsInOrder.AsReadOnly();
 
@@ -103,7 +103,7 @@ namespace WebStore.Models
         {
         }
 
-        public Order(DateTime date, OrderStatus status, DeliveryType deliveryType, Customer customer)
+        /*public Order(DateTime date, OrderStatus status, DeliveryType deliveryType, Customer customer)
         {
             Date = date;
             Status = status;
@@ -111,7 +111,7 @@ namespace WebStore.Models
             Customer = customer ?? throw new ArgumentNullException(nameof(customer));
             IsHidden = false;
             _extent.Add(this);
-        }
+        }*/
 
         public void Delete()
         {
@@ -120,21 +120,21 @@ namespace WebStore.Models
                 productInOrder.Delete();
             }
 
-            if (_customer != null)
+            /*if (_customer != null)
             {
                 RemoveCustomer(_customer, true);
-            }
+            }*/
 
             _extent.Remove(this);
         }
 
 
-        public void AddCustomer(Customer customer) => LinkCustomer(customer);
+        /*public void AddCustomer(Customer customer) => LinkCustomer(customer);
 
         public void RemoveCustomer(Customer customer, bool suppressException = false) => UnlinkCustomer(customer, suppressException);
 
-        private void LinkCustomer(Customer customer)
-        {
+        private void LinkCustomer(Customer customer)*/
+        /*{
             if (customer is null)
                 throw new ArgumentNullException(nameof(customer));
 
@@ -168,7 +168,7 @@ namespace WebStore.Models
             }
             
             throw new InvalidOperationException("Cannot remove customer from order");
-        }
+        }*/
         
         public void AddProductInOrder(ProductInOrder productInOrder) => LinkProductInOrder(productInOrder);
 
@@ -179,7 +179,7 @@ namespace WebStore.Models
             if (productInOrder is null)
                 throw new ArgumentNullException(nameof(productInOrder));
 
-            if (productInOrder.Product.IsAdultProduct && _customer.Age < Person.LegalAdultAge)
+            if (productInOrder.Product.IsAdultProduct )//&& _customer.Age < Person.LegalAdultAge)
                 throw new ArgumentException("Customer does not meet the age requirement");
             
             if (_productsInOrder.Contains(productInOrder))

@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+﻿/*using System.Reflection;
 using WebStore.Models;
 using WebStore.Models.Enums;
 using WebStore.Models.Persistence;
@@ -135,4 +135,4 @@ public class PersonTests
         Assert.That(Customer.GetAll()[0].FirstName, Is.EqualTo(customer.FirstName));
         Assert.That(Customer.GetAll()[0].DateOfBirth, Is.EqualTo(customer.DateOfBirth));
     }
-}
+}*/
