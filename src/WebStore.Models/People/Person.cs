@@ -12,8 +12,6 @@ namespace WebStore.Models
     {
         private static List<Person> _extent = new List<Person>();
         
-        
-
         private string _firstName = string.Empty;
         private string _lastName = string.Empty;
         private string _phoneNumber = string.Empty;
@@ -105,19 +103,20 @@ namespace WebStore.Models
             }
         }
 
+        private List<Address>? _shippingAddress;
         public List<Address>? ShippingAddress
         {
             get
             {
                 if (PersonRole != PersonRole.EmployeeCustomer && PersonRole != PersonRole.Customer)
                     throw new InvalidOperationException("Cannot get shipping address for not customer or employee customer");
-                return ShippingAddress;
+                return _shippingAddress;
             }
             set
             {
                 if (PersonRole != PersonRole.EmployeeCustomer && PersonRole != PersonRole.Customer)
                     throw new InvalidOperationException("Cannot set shipping address for not customer or employee customer");
-                ShippingAddress = value;
+                _shippingAddress = value;
             }
         }
         public int? Age
@@ -133,11 +132,9 @@ namespace WebStore.Models
                 if (DateOfBirth?.Date > today.AddYears(-age)) age--;
                 return age;
             }
-            
         }
         
         // employee
-        
         private EmployeeRole? _employeeRole;
         private decimal? _salary;
         
