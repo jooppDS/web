@@ -93,6 +93,8 @@ namespace WebStore.Models
             {
                 if (PersonRole != PersonRole.EmployeeCustomer && PersonRole != PersonRole.Customer)
                     throw new InvalidOperationException("Cannot set date of birth for not customer or employee customer");
+                if (value is null)
+                    throw new ArgumentNullException(nameof(DateOfBirth));
                 if (value > DateTime.Today)
                     throw new ArgumentOutOfRangeException(nameof(DateOfBirth), 
                         "Date of birth cannot be in the future");
@@ -116,6 +118,8 @@ namespace WebStore.Models
             {
                 if (PersonRole != PersonRole.EmployeeCustomer && PersonRole != PersonRole.Customer)
                     throw new InvalidOperationException("Cannot set shipping address for not customer or employee customer");
+                if (value is null)
+                    throw new ArgumentNullException(nameof(ShippingAddress));
                 _shippingAddress = value;
             }
         }
@@ -150,6 +154,8 @@ namespace WebStore.Models
             {
                 if (PersonRole != PersonRole.Employee && PersonRole != PersonRole.EmployeeCustomer) 
                     throw new InvalidOperationException("Cannot set employee role for not employee or employee customer");
+                if (value is null)
+                    throw new ArgumentNullException(nameof(EmployeeRole));
                 if (!Enum.IsDefined(typeof(EmployeeRole), value))
                     throw new ArgumentOutOfRangeException(nameof(EmployeeRole), 
                         "Role must be a valid EmployeeRole value");
@@ -169,6 +175,8 @@ namespace WebStore.Models
             {
                 if (PersonRole != PersonRole.Employee && PersonRole != PersonRole.EmployeeCustomer) 
                     throw new InvalidOperationException("Cannot set salary for not employee or employee customer");
+                if (value is null)
+                    throw new ArgumentNullException(nameof(Salary));
                 if (value < 0)
                     throw new ArgumentOutOfRangeException(nameof(Salary), 
                         "Salary cannot be negative");
@@ -215,7 +223,6 @@ namespace WebStore.Models
      
         protected Person()
         {
-
         }
 
 
